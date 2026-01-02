@@ -219,7 +219,7 @@ const splitArrayPerPages = (replyElements: HTMLElement[]) => {
   return replyElementsPerPages
 }
 
-const process = async (
+const startFix = async (
   topicId: string,
   page: number,
   displayNumber: number,
@@ -264,7 +264,7 @@ const process = async (
     if (replies.length < displayNumber) {
       console.info("[V2EX.REP] API data outdated, re-fetch it")
       setTimeout(async () => {
-        await process(topicId, page, displayNumber, replyElements, true)
+        await startFix(topicId, page, displayNumber, replyElements, true)
       }, 100)
     }
   }
@@ -296,5 +296,5 @@ export const fixReplyFloorNumbers = async (replyElements: HTMLElement[]) => {
     return
   }
 
-  await process(topicId, page, displayNumber, replyElements)
+  await startFix(topicId, page, displayNumber, replyElements)
 }

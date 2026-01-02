@@ -1,4 +1,8 @@
-import { getSettingsValue, initSettings } from "browser-extension-settings"
+import {
+  getSettingsValue,
+  initSettings,
+  showSettings,
+} from "browser-extension-settings"
 import {
   $,
   addEventListener,
@@ -36,6 +40,22 @@ import {
   getReplyElements,
   resetCachedReplyElements,
 } from "./utils"
+
+if (
+  // eslint-disable-next-line n/prefer-global/process
+  process.env.PLASMO_TARGET === "chrome-mv3" ||
+  // eslint-disable-next-line n/prefer-global/process
+  process.env.PLASMO_TARGET === "firefox-mv3"
+) {
+  // Receive popup trigger to show settings in the content context
+  const runtime =
+    (globalThis as any).chrome?.runtime ?? (globalThis as any).browser?.runtime
+  runtime?.onMessage?.addListener((message: any) => {
+    if (message?.type === "links-helper:show-settings") {
+      void showSettings()
+    }
+  })
+}
 
 export const config: PlasmoCSConfig = {
   matches: ["https://*.v2ex.com/*", "https://*.v2ex.co/*"],
@@ -145,8 +165,10 @@ const settingsTable = {
 
 let fixedReplyFloorNumbers = false
 
-async function process() {
-  const opaticyOfCitedReplies = getSettingsValue("opaticyOfCitedReplies")
+async function applyAll() {
+  const opaticyOfCitedReplies = getSettingsValue<string>(
+    "opaticyOfCitedReplies"
+  )
   if (doc.documentElement) {
     doc.documentElement.dataset.vrOpaticyOfCitedReplies = opaticyOfCitedReplies
   }
@@ -262,15 +284,15 @@ async function main() {
     </a></p>`,
     settingsTable,
     async onValueChange() {
-      await process()
+      await applyAll()
     },
   }))
 
   addStyle(styleText)
 
-  const resetCachedReplyElementsThenProcess = async () => {
+  const resetCachedReplyElementsThenApplyAll = async () => {
     resetCachedReplyElements()
-    await process()
+    await applyAll()
   }
 
   addEventListener(window, {
@@ -297,7 +319,7 @@ async function main() {
       }
     },
     async replyElementsLengthUpdated() {
-      await resetCachedReplyElementsThenProcess()
+      await resetCachedReplyElementsThenApplyAll()
       const replyElements = getCachedReplyElements()
       for (const replyElement of replyElements) {
         if (getSettingsValue("showCitedReplies")) {
@@ -316,17 +338,21 @@ async function main() {
     },
   })
 
-  addEventListener(doc, "readystatechange", resetCachedReplyElementsThenProcess)
+  addEventListener(
+    doc,
+    "readystatechange",
+    resetCachedReplyElementsThenApplyAll
+  )
 
-  await process()
+  await applyAll()
 
   const scanNodes = throttle(async () => {
-    await process()
+    await applyAll()
   }, 500)
 
   addEventListener(doc, "visibilitychange", async () => {
     if (!doc.hidden) {
-      await process()
+      await applyAll()
     }
   })
 

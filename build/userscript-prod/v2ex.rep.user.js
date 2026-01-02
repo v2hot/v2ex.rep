@@ -2462,7 +2462,7 @@
     }
     return replyElementsPerPages
   }
-  var process = async (
+  var startFix = async (
     topicId,
     page,
     displayNumber,
@@ -2499,7 +2499,7 @@
       if (replies.length < displayNumber) {
         console.info("[V2EX.REP] API data outdated, re-fetch it")
         setTimeout(async () => {
-          await process(topicId, page, displayNumber, replyElements, true)
+          await startFix(topicId, page, displayNumber, replyElements, true)
         }, 100)
       }
     }
@@ -2524,7 +2524,7 @@
     ) {
       return
     }
-    await process(topicId, page, displayNumber, replyElements)
+    await startFix(topicId, page, displayNumber, replyElements)
   }
   var restoreImgSrc = throttle(() => {
     for (const img of $$("img[data-src]")) {
@@ -3342,6 +3342,24 @@
   var uploadImage = () => {
     runOnce("uploadImage:init", init)
   }
+  if (false) {
+    const runtime =
+      (_c = (_a = globalThis.chrome) == null ? void 0 : _a.runtime) != null
+        ? _c
+        : (_b = globalThis.browser) == null
+          ? void 0
+          : _b.runtime
+    ;(_d = runtime == null ? void 0 : runtime.onMessage) == null
+      ? void 0
+      : _d.addListener((message) => {
+          if (
+            (message == null ? void 0 : message.type) ===
+            "links-helper:show-settings"
+          ) {
+            void showSettings2()
+          }
+        })
+  }
   var config = {
     matches: ["https://*.v2ex.com/*", "https://*.v2ex.co/*"],
     run_at: "document_start",
@@ -3449,7 +3467,7 @@
     },
   }
   var fixedReplyFloorNumbers = false
-  async function process2() {
+  async function applyAll() {
     const opaticyOfCitedReplies = getSettingsValue("opaticyOfCitedReplies")
     if (doc.documentElement) {
       doc.documentElement.dataset.vrOpaticyOfCitedReplies =
@@ -3532,13 +3550,13 @@
         '\n    <p>\u66F4\u6539\u8BBE\u7F6E\u540E\uFF0C\u9700\u8981\u91CD\u65B0\u52A0\u8F7D\u9875\u9762</p>\n    <p>\n    <a href="https://github.com/v2hot/v2ex.rep/issues" target="_blank">\n    \u95EE\u9898\u53CD\u9988\n    </a></p>\n    <p>Made with \u2764\uFE0F by\n    <a href="https://www.pipecraft.net/" target="_blank">\n      Pipecraft\n    </a></p>',
       settingsTable: settingsTable2,
       async onValueChange() {
-        await process2()
+        await applyAll()
       },
     }))
     addStyle(content_default)
-    const resetCachedReplyElementsThenProcess = async () => {
+    const resetCachedReplyElementsThenApplyAll = async () => {
       resetCachedReplyElements()
-      await process2()
+      await applyAll()
     }
     addEventListener(win, {
       floorNumberUpdated() {
@@ -3563,7 +3581,7 @@
         }
       },
       async replyElementsLengthUpdated() {
-        await resetCachedReplyElementsThenProcess()
+        await resetCachedReplyElementsThenApplyAll()
         const replyElements = getCachedReplyElements()
         for (const replyElement of replyElements) {
           if (getSettingsValue("showCitedReplies")) {
@@ -3583,15 +3601,15 @@
     addEventListener(
       doc,
       "readystatechange",
-      resetCachedReplyElementsThenProcess
+      resetCachedReplyElementsThenApplyAll
     )
-    await process2()
+    await applyAll()
     const scanNodes = throttle(async () => {
-      await process2()
+      await applyAll()
     }, 500)
     addEventListener(doc, "visibilitychange", async () => {
       if (!doc.hidden) {
-        await process2()
+        await applyAll()
       }
     })
     const observer = new MutationObserver((mutationsList) => {
