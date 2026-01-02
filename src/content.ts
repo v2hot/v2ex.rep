@@ -38,8 +38,7 @@ import {
 } from "./utils"
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://*.v2ex.com/*"],
-
+  matches: ["https://*.v2ex.com/*", "https://*.v2ex.co/*"],
   run_at: "document_start",
 }
 

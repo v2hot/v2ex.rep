@@ -63,7 +63,8 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://*/*"
+      "https://*.v2ex.com/*",
+      "https://*.v2ex.co/*"
     ],
     "permissions": [
       "storage",

@@ -11,6 +11,7 @@
 // @author               Pipecraft
 // @license              MIT
 // @match                https://*.v2ex.com/*
+// @match                https://*.v2ex.co/*
 // @run-at               document-start
 // @grant                GM.info
 // @grant                GM.addValueChangeListener
@@ -3285,7 +3286,7 @@
     runOnce("uploadImage:init", init)
   }
   var config = {
-    matches: ["https://*.v2ex.com/*"],
+    matches: ["https://*.v2ex.com/*", "https://*.v2ex.co/*"],
     run_at: "document_start",
   }
   var settingsTable2 = {
