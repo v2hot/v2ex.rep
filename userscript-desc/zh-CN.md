@@ -79,10 +79,45 @@
 
 ## 其他 V2EX 必装脚本
 
-- [🏷️ 小鱼标签 (UTags) - 为链接添加用户标签，支持 V2EX](https://greasyfork.org/scripts/460718-utags-add-usertags-to-links)
-- [🔗 链接助手](https://greasyfork.org/scripts/464541-links-helper) - 支持所有网站在新标签页中打开第三方网站链接（外链），在新标签页中打开符合指定规则的本站链接，解析文本链接为超链接，微信公众号文本转可点击的超链接，图片链接转图片标签，解析 Markdown 格式链接与图片标签
-- [v2ex.min - V2EX 极简风格](https://greasyfork.org/scripts/463552-v2ex-min)
-- [赐你个头像吧](https://greasyfork.org/scripts/472616-replace-ugly-avatars) - 🔃 换掉别人的头像与昵称
+### 🏷️ UTags - 为链接添加用户标签
+
+- **链接**：[Greasy Fork](https://greasyfork.org/zh-CN/scripts/460718-utags-add-usertags-to-links)
+- **功能**：为用户、帖子、视频和其他链接添加自定义标签和备注
+- **亮点**：支持特殊标签过滤（如垃圾、屏蔽、标题党等），数据导出/导入，自动标记已查看帖子
+- **支持网站**：V2EX、X(Twitter)、Reddit、GitHub、哔哩哔哩、知乎、Linux.do、Youtube 等 50+ 网站
+- **描述**：超级实用的标签管理工具，可为论坛用户或帖子添加标签，轻松识别或屏蔽低质量内容
+
+### ⚡ UTags 快捷导航 (UTags Shortcuts)
+
+- **链接**：[Greasy Fork](https://greasyfork.org/zh-CN/scripts/558485-utags-shortcuts) · [ScriptCat](https://scriptcat.org/zh-CN/script-show-page/4910) · [GitHub](https://github.com/utags/userscripts/raw/main/utags-shortcuts/utags-shortcuts.user.js)
+- **功能**：按站点分组、自定义图标、悬浮球或侧边栏导航面板
+- **亮点**：悬浮/侧边栏模式、支持链接与脚本、可视化编辑、快捷键支持
+- **支持网站**：所有网站
+- **描述**：一款功能强大的用户脚本，提供便捷的快捷导航面板，帮助你高效管理常用链接与自动化脚本，提升浏览体验
+
+### 🔗 链接助手
+
+- **链接**：[Greasy Fork](https://greasyfork.org/zh-CN/scripts/464541-links-helper)
+- **功能**：在新标签页中打开第三方网站链接，将文本链接解析为超链接
+- **亮点**：支持自定义规则，解析 Markdown 和 BBCode 格式，将图片链接转换为图片标签
+- **支持网站**：适用于所有网站，包括谷歌、YouTube、GitHub、V2EX 等
+- **描述**：增强链接浏览体验，自动处理各种链接格式，使网页浏览更加便捷
+
+### 🖼️ 通用图片上传助手 (Universal Image Uploader)
+
+- **链接**：[Greasy Fork](https://greasyfork.org/zh-CN/scripts/553341-universal-image-uploader) · [ScriptCat](https://scriptcat.org/zh-CN/script-show-page/4467) · [GitHub](https://github.com/utags/userscripts/raw/main/universal-image-uploader/universal-image-uploader.user.js)
+- **功能**：粘贴/拖拽/选择图片批量上传到 Imgur/Tikolu/MJJ.Today/Appinn
+- **亮点**：自动复制为 Markdown/HTML/BBCode/链接，支持站点按钮与本地历史，兼容单页应用 (SPA)
+- **支持网站**：所有网站
+- **描述**：在任意网站上粘贴、拖拽或选择图片，批量上传到图床，并按需自动复制为多种格式，支持本地历史记录以便快速复用
+
+### 🔍 查找适用于当前网站的脚本
+
+- **链接**：[Greasy Fork](https://greasyfork.org/zh-CN/scripts/550659-find-scripts-for-this-site)
+- **功能**：快速查找当前网站的用户脚本
+- **亮点**：支持多个流行的脚本仓库，轻松发现有用的脚本
+- **支持网站**：适用于任何网站，查找相关用户脚本
+- **描述**：一个方便的工具，用于发现和安装专为您访问的网站设计的用户脚本
 
 ## Release Notes
 
@@ -90,7 +125,7 @@
   - 浏览器扩展版本支持打开设置功能
 - 1.6.0
   - 支持同时上传多个图片
-  - 图片上传建议使用[通用图片上传助手](https://greasyfork.org/zh-CN/scripts/553341-universal-image-uploader)
+  - 图片上传功能建议使用[通用图片上传助手](https://greasyfork.org/zh-CN/scripts/553341-universal-image-uploader)油猴脚本
 - 1.5.4
   - 设置中添加当被引用的回复是前一个楼层时，始终显示的选项
 - 1.5.1
