@@ -253,7 +253,7 @@ async function process() {
 }
 
 async function main() {
-  await initSettings({
+  await initSettings(() => ({
     id: "v2ex.rep",
     title: "V2EX.REP",
     footer: `
@@ -270,7 +270,7 @@ async function main() {
     async onValueChange() {
       await process()
     },
-  })
+  }))
 
   addStyle(styleText)
 

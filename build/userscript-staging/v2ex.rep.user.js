@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name                 V2EX.REP - 专注提升 V2EX 主题回复浏览体验
-// @name:zh-CN           V2EX.REP - 专注提升 V2EX 主题回复浏览体验
+// @name                 V2EX.REP - 专注提升 V2EX 主题回复浏览体验 - staging
+// @name:zh-CN           V2EX.REP - 专注提升 V2EX 主题回复浏览体验 - staging
 // @namespace            https://github.com/v2hot/v2ex.rep
 // @homepageURL          https://github.com/v2hot/v2ex.rep#readme
 // @supportURL           https://github.com/v2hot/v2ex.rep/issues

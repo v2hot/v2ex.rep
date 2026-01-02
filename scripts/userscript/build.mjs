@@ -1,6 +1,6 @@
-import * as esbuild from "esbuild"
 import fs from "node:fs"
 import process from "node:process"
+import * as esbuild from "esbuild"
 
 import { getBuildOptions } from "../common.mjs"
 
@@ -24,7 +24,7 @@ const buildOptions = {
 }
 buildOptions.alias = {
   ...buildOptions.alias,
-  "browser-extension-storage": "browser-extension-storage/userscript",
+  "browser-extension-storage": "browser-extension-storage/userscript-string",
   "browser-extension-utils": "browser-extension-utils/userscript",
 }
 
