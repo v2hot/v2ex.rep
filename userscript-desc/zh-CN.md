@@ -86,6 +86,9 @@
 
 ## Release Notes
 
+- 1.6.0
+  - 支持同时上传多个图片
+  - 图片上传建议使用[通用图片上传助手](https://greasyfork.org/zh-CN/scripts/553341-universal-image-uploader)
 - 1.5.4
   - 设置中添加当被引用的回复是前一个楼层时，始终显示的选项
 - 1.5.1
@@ -159,11 +162,9 @@
 
 ## License
 
-Copyright (c) 2023 [Pipecraft](https://www.pipecraft.net). Licensed under the [MIT License](https://github.com/v2hot/v2ex.rep/blob/main/LICENSE).
+Copyright (c) 2023-2026 [Pipecraft](https://www.pipecraft.net). Licensed under the [MIT License](https://github.com/v2hot/v2ex.rep/blob/main/LICENSE).
 
 ## >\_
 
 [![Pipecraft](https://img.shields.io/badge/site-pipecraft-brightgreen)](https://www.pipecraft.net)
-[![UTags](https://img.shields.io/badge/site-UTags-brightgreen)](https://utags.pipecraft.net)
-[![DTO](https://img.shields.io/badge/site-DTO-brightgreen)](https://dto.pipecraft.net)
-[![BestXTools](https://img.shields.io/badge/site-bestxtools-brightgreen)](https://www.bestxtools.com)
+[![UTags](https://img.shields.io/badge/site-UTags-brightgreen)](https://utags.link)

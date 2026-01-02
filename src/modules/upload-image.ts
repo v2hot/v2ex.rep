@@ -60,26 +60,42 @@ async function uploadImageToImgur(file: File): Promise<string> {
   formData.append("image", file)
 
   // 随机获取一个 Imgur Client ID。
-  const randomIndex = Math.floor(Math.random() * imgurClientIdPool.length)
-  const clidenId = imgurClientIdPool[randomIndex]
+  // Shuffle Client-ID list to ensure a different ID on each retry
+  const clientIds = [...imgurClientIdPool]
+  for (let i = clientIds.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[clientIds[i], clientIds[j]] = [clientIds[j], clientIds[i]]
+  }
 
-  // 使用详情参考 Imgur API 文档：https://apidocs.imgur.com/
-  const response = await fetch("https://api.imgur.com/3/upload", {
-    method: "POST",
+  let lastError: Error | undefined
 
-    headers: { Authorization: `Client-ID ${clidenId}` },
-    body: formData,
-  })
+  for (const clientId of clientIds) {
+    try {
+      // 使用详情参考 Imgur API 文档：https://apidocs.imgur.com/
+      // eslint-disable-next-line no-await-in-loop
+      const response = await fetch("https://api.imgur.com/3/upload", {
+        method: "POST",
+        headers: { Authorization: `Client-ID ${clientId}` },
+        body: formData,
+      })
 
-  if (response.ok) {
-    const responseData: ImgurResponse = (await response.json()) as ImgurResponse
+      if (response.ok) {
+        const responseData: ImgurResponse =
+          // eslint-disable-next-line no-await-in-loop
+          (await response.json()) as ImgurResponse
 
-    if (responseData.success) {
-      return responseData.data.link
+        if (responseData.success) {
+          return responseData.data.link
+        }
+      }
+
+      lastError = new Error("上传失败")
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error))
     }
   }
 
-  throw new Error("上传失败")
+  throw lastError || new Error("上传失败")
 }
 
 const handleUploadImage = (file: File) => {
@@ -103,12 +119,15 @@ const handleClickUploadImage = () => {
   imgInput.style.display = "none"
   imgInput.type = "file"
   imgInput.accept = "image/*"
+  imgInput.multiple = true
 
   addEventListener(imgInput, "change", () => {
-    const selectedFile = imgInput.files?.[0]
+    const selectedFiles = imgInput.files
 
-    if (selectedFile) {
-      handleUploadImage(selectedFile)
+    if (selectedFiles) {
+      for (const file of selectedFiles) {
+        handleUploadImage(file)
+      }
     }
   })
 
@@ -173,17 +192,18 @@ const init = () => {
       }
 
       // 查找属于图像类型的数据项。
-      const imageItem = Array.from(items).find((item) =>
+      const imageItems = Array.from(items).filter((item) =>
         item.type.includes("image")
       )
 
-      if (imageItem) {
-        const file = imageItem.getAsFile()
-
-        if (file) {
-          // event.preventDefault()
-          // event.stopImmediatePropagation()
-          handleUploadImage(file)
+      if (imageItems.length > 0) {
+        event.preventDefault()
+        event.stopPropagation()
+        for (const item of imageItems) {
+          const file = item.getAsFile()
+          if (file) {
+            handleUploadImage(file)
+          }
         }
       }
     },

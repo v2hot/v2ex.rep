@@ -4,7 +4,7 @@
 // @namespace            https://github.com/v2hot/v2ex.rep
 // @homepageURL          https://github.com/v2hot/v2ex.rep#readme
 // @supportURL           https://github.com/v2hot/v2ex.rep/issues
-// @version              1.5.4
+// @version              1.6.0
 // @description          专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @description:zh-CN    专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @icon                 https://www.v2ex.com/favicon.ico
@@ -209,6 +209,46 @@
     }
     startPolling()
     return id
+  }
+  function safeJsonParse(jsonString, defaultValue) {
+    if (jsonString === void 0 || jsonString === null) {
+      return defaultValue
+    }
+    try {
+      return JSON.parse(jsonString)
+    } catch (e) {
+      return defaultValue
+    }
+  }
+  function safeJsonParseWithFallback(jsonString) {
+    if (jsonString === void 0) {
+      return void 0
+    }
+    if (jsonString === null) {
+      return null
+    }
+    try {
+      return JSON.parse(jsonString)
+    } catch (e) {
+      return jsonString
+    }
+  }
+  async function getValue2(key, defaultValue) {
+    const val = await getValue(key)
+    return safeJsonParse(val, defaultValue)
+  }
+  async function setValue2(key, value) {
+    await setValue(
+      key,
+      value === void 0 || value === null ? void 0 : JSON.stringify(value)
+    )
+  }
+  async function addValueChangeListener2(key, func) {
+    return addValueChangeListener(key, (k, oldVal, newVal, remote) => {
+      const parsedOld = safeJsonParseWithFallback(oldVal)
+      const parsedNew = safeJsonParseWithFallback(newVal)
+      func(k, parsedOld, parsedNew, remote)
+    })
   }
   var doc = document
   var win = globalThis
@@ -1039,7 +1079,7 @@
   var settings = {}
   async function getSettings() {
     var _a
-    return (_a = await getValue(storageKey)) != null ? _a : {}
+    return (_a = await getValue2(storageKey)) != null ? _a : {}
   }
   async function saveSettingsValue(key, value) {
     const settings2 = await getSettings()
@@ -1047,7 +1087,7 @@
       settingsTable[key] && settingsTable[key].defaultValue === value
         ? void 0
         : value
-    await setValue(storageKey, settings2)
+    await setValue2(storageKey, settings2)
   }
   function getSettingsValue(key) {
     var _a
@@ -1460,7 +1500,7 @@
     }
   }
   var initSettings = async (optionsProvider) => {
-    await addValueChangeListener(storageKey, async () => {
+    await addValueChangeListener2(storageKey, async () => {
       settings = await getSettings()
       await updateOptions()
       const newLocale = getSettingsValue("locale") || getPrefferedLocale()
@@ -1901,7 +1941,7 @@
     if (!once) {
       return
     }
-    const lastCheckInDate = await getValue(storageKey2)
+    const lastCheckInDate = await getValue2(storageKey2)
     if (lastCheckInDate) {
       const now = Date.now()
       if (
@@ -1916,7 +1956,7 @@
       result.includes("\u6BCF\u65E5\u767B\u5F55\u5956\u52B1\u5DF2\u9886\u53D6")
     ) {
       console.info("[V2EX.REP] \u7B7E\u5230\u6210\u529F")
-      await setValue(storageKey2, Date.now())
+      await setValue2(storageKey2, Date.now())
       const checkInLink = $('a[href^="/mission/daily"]')
       if (checkInLink) {
         const box = checkInLink.closest(".box")
@@ -3112,20 +3152,31 @@
   async function uploadImageToImgur(file) {
     const formData = new FormData()
     formData.append("image", file)
-    const randomIndex = Math.floor(Math.random() * imgurClientIdPool.length)
-    const clidenId = imgurClientIdPool[randomIndex]
-    const response = await fetch("https://api.imgur.com/3/upload", {
-      method: "POST",
-      headers: { Authorization: "Client-ID ".concat(clidenId) },
-      body: formData,
-    })
-    if (response.ok) {
-      const responseData = await response.json()
-      if (responseData.success) {
-        return responseData.data.link
+    const clientIds = [...imgurClientIdPool]
+    for (let i2 = clientIds.length - 1; i2 > 0; i2--) {
+      const j = Math.floor(Math.random() * (i2 + 1))
+      ;[clientIds[i2], clientIds[j]] = [clientIds[j], clientIds[i2]]
+    }
+    let lastError
+    for (const clientId of clientIds) {
+      try {
+        const response = await fetch("https://api.imgur.com/3/upload", {
+          method: "POST",
+          headers: { Authorization: "Client-ID ".concat(clientId) },
+          body: formData,
+        })
+        if (response.ok) {
+          const responseData = await response.json()
+          if (responseData.success) {
+            return responseData.data.link
+          }
+        }
+        lastError = new Error("\u4E0A\u4F20\u5931\u8D25")
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error))
       }
     }
-    throw new Error("\u4E0A\u4F20\u5931\u8D25")
+    throw lastError || new Error("\u4E0A\u4F20\u5931\u8D25")
   }
   var handleUploadImage = (file) => {
     const detail = { file }
@@ -3144,11 +3195,13 @@
     imgInput.style.display = "none"
     imgInput.type = "file"
     imgInput.accept = "image/*"
+    imgInput.multiple = true
     addEventListener(imgInput, "change", () => {
-      var _a
-      const selectedFile = (_a = imgInput.files) == null ? void 0 : _a[0]
-      if (selectedFile) {
-        handleUploadImage(selectedFile)
+      const selectedFiles = imgInput.files
+      if (selectedFiles) {
+        for (const file of selectedFiles) {
+          handleUploadImage(file)
+        }
       }
     })
     imgInput.click()
@@ -3201,13 +3254,17 @@
         if (!items) {
           return
         }
-        const imageItem = Array.from(items).find((item) =>
+        const imageItems = Array.from(items).filter((item) =>
           item.type.includes("image")
         )
-        if (imageItem) {
-          const file = imageItem.getAsFile()
-          if (file) {
-            handleUploadImage(file)
+        if (imageItems.length > 0) {
+          event.preventDefault()
+          event.stopPropagation()
+          for (const item of imageItems) {
+            const file = item.getAsFile()
+            if (file) {
+              handleUploadImage(file)
+            }
           }
         }
       },
