@@ -123,7 +123,7 @@ const showModalReplies = (
   if (beforeCount === 0 && afterCount === 0) {
     addElement(box, "div", {
       class: "cell",
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+
       innerHTML: `<span class="fade">本页面没有其他回复</span>`,
     })
     if (!type || type === "all") {
@@ -145,7 +145,7 @@ const showModalReplies = (
   if (beforeCount === 0 && afterCount > 0) {
     addElement(box, "div", {
       class: "cell",
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+
       innerHTML: `<span class="fade">这条回复后面还有 ${afterCount} 条回复</span>`,
     })
   }
@@ -153,7 +153,7 @@ const showModalReplies = (
   if (beforeCount > 0 && afterCount === 0) {
     addElement(box2, "div", {
       class: "cell",
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+
       innerHTML: `<span class="fade">这条回复前面还有 ${beforeCount} 条回复</span>`,
     })
   }

@@ -39,7 +39,7 @@ import {
 
 export const config: PlasmoCSConfig = {
   matches: ["https://*.v2ex.com/*"],
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   run_at: "document_start",
 }
 
@@ -137,7 +137,7 @@ const settingsTable = {
     defaultValue: "default",
     options: {
       默认: "default",
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+
       GitHub: "github",
       用户头像: "avatar",
     },
@@ -147,9 +147,7 @@ const settingsTable = {
 let fixedReplyFloorNumbers = false
 
 async function process() {
-  const opaticyOfCitedReplies = getSettingsValue(
-    "opaticyOfCitedReplies"
-  ) as string
+  const opaticyOfCitedReplies = getSettingsValue("opaticyOfCitedReplies")
   if (doc.documentElement) {
     doc.documentElement.dataset.vrOpaticyOfCitedReplies = opaticyOfCitedReplies
   }
@@ -165,7 +163,7 @@ async function process() {
     })
   }
 
-  replaceFavicon(getSettingsValue("replaceFavicon") as string)
+  replaceFavicon(getSettingsValue("replaceFavicon"))
 
   if (/\/t\/\d+/.test(location.href)) {
     const replyElements = getReplyElements()
@@ -206,21 +204,18 @@ async function process() {
       if (getSettingsValue("showCitedReplies")) {
         showCitedReplies(
           replyElement,
-          getSettingsValue("showPreviousCitedReplies") as string
+          getSettingsValue("showPreviousCitedReplies")
         )
       }
     }
 
     if (domReady) {
-      showTopReplies(
-        replyElements,
-        getSettingsValue("showTopReplies") as boolean
-      )
+      showTopReplies(replyElements, getSettingsValue("showTopReplies"))
     }
 
-    stickyTopicButtons(getSettingsValue("stickyTopicButtons") as boolean)
+    stickyTopicButtons(getSettingsValue("stickyTopicButtons"))
 
-    filterRepliesByUser(getSettingsValue("filterRepliesByUser") as boolean)
+    filterRepliesByUser(getSettingsValue("filterRepliesByUser"))
 
     if (
       domReady &&
@@ -295,7 +290,7 @@ async function main() {
           if (getSettingsValue("showCitedReplies")) {
             showCitedReplies(
               replyElement,
-              getSettingsValue("showPreviousCitedReplies") as string,
+              getSettingsValue("showPreviousCitedReplies"),
               true
             )
           }
@@ -309,17 +304,13 @@ async function main() {
         if (getSettingsValue("showCitedReplies")) {
           showCitedReplies(
             replyElement,
-            getSettingsValue("showPreviousCitedReplies") as string,
+            getSettingsValue("showPreviousCitedReplies"),
             true
           )
         }
       }
 
-      showTopReplies(
-        replyElements,
-        getSettingsValue("showTopReplies") as boolean,
-        true
-      )
+      showTopReplies(replyElements, getSettingsValue("showTopReplies"), true)
       if (getSettingsValue("fixReplyFloorNumbers")) {
         await fixReplyFloorNumbers(replyElements)
       }

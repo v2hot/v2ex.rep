@@ -40,6 +40,7 @@ const xoConfig = [
       "@typescript-eslint/prefer-optional-chain": 0,
       "logical-assignment-operators": 0,
       "unicorn/prevent-abbreviations": 0,
+      "unicorn/prefer-spread": 0,
       "capitalized-comments": 0,
       "prefer-destructuring": 0,
       "new-cap": 0,

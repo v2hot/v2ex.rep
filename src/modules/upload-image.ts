@@ -66,7 +66,7 @@ async function uploadImageToImgur(file: File): Promise<string> {
   // 使用详情参考 Imgur API 文档：https://apidocs.imgur.com/
   const response = await fetch("https://api.imgur.com/3/upload", {
     method: "POST",
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+
     headers: { Authorization: `Client-ID ${clidenId}` },
     body: formData,
   })
@@ -86,10 +86,12 @@ const handleUploadImage = (file: File) => {
   const detail: UploadingImageDetail = { file }
   window.dispatchEvent(new CustomEvent("uploadImageStart", { detail }))
   uploadImageToImgur(file)
+    // eslint-disable-next-line promise/prefer-await-to-then
     .then((imgLink) => {
       detail.imgLink = imgLink
       window.dispatchEvent(new CustomEvent("uploadImageSuccess", { detail }))
     })
+    // eslint-disable-next-line promise/prefer-await-to-then
     .catch(() => {
       window.dispatchEvent(new CustomEvent("uploadImageFailed", { detail }))
     })

@@ -1694,19 +1694,14 @@
   var getPagingPreviousButtons = () =>
     $$(".normal_page_right").map((right) => right.previousElementSibling)
   var getPagingNextButtons = () => $$(".normal_page_right")
-  var getReplyInputElement = () => {
-    return $("#reply_content")
-  }
+  var getReplyInputElement = () => $("#reply_content")
   function insertTextToReplyInput(text) {
     const replyTextArea = getReplyInputElement()
     if (replyTextArea) {
       const startPos = replyTextArea.selectionStart
       const endPos = replyTextArea.selectionEnd
       const valueToStart = replyTextArea.value.slice(0, startPos)
-      const valueFromEnd = replyTextArea.value.slice(
-        endPos,
-        replyTextArea.value.length
-      )
+      const valueFromEnd = replyTextArea.value.slice(endPos)
       replyTextArea.value = ""
         .concat(valueToStart)
         .concat(text)
@@ -1860,7 +1855,7 @@
   var updateOnce = async () => {
     const once = await fetchOnce()
     if (once) {
-      window.once = once
+      globalThis.once = once
       if ($("#once")) {
         $("#once").value = once
       }

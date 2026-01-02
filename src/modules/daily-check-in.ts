@@ -37,7 +37,7 @@ export const dailyCheckIn = async () => {
     return
   }
 
-  const lastCheckInDate = (await getValue(storageKey)) as number
+  const lastCheckInDate = await getValue<number>(storageKey)
   if (lastCheckInDate) {
     const now = Date.now()
     if (

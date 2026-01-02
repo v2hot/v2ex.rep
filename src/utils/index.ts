@@ -142,12 +142,11 @@ export const parseUrl = () => {
   return { topicId, page }
 }
 
-export const getRepliesCount = () => {
-  return parseInt10(
+export const getRepliesCount = () =>
+  parseInt10(
     (/(\d+)\s条回复/.exec($(".box .cell .gray")?.textContent || "") || [])[1],
     0
   )
-}
 
 export const getMemberIdFromMemberLink = (memberLink: HTMLAnchorElement) => {
   if (!memberLink) {
@@ -227,9 +226,8 @@ export const getPagingPreviousButtons = () =>
   )
 export const getPagingNextButtons = () => $$(".normal_page_right")
 
-export const getReplyInputElement = () => {
-  return $("#reply_content") as HTMLTextAreaElement | undefined
-}
+export const getReplyInputElement = () =>
+  $("#reply_content") as HTMLTextAreaElement | undefined
 
 export const getReplyInputText = () => {
   const replyTextArea = getReplyInputElement()
@@ -246,10 +244,7 @@ export function insertTextToReplyInput(text: string) {
     const endPos = replyTextArea.selectionEnd
 
     const valueToStart = replyTextArea.value.slice(0, startPos)
-    const valueFromEnd = replyTextArea.value.slice(
-      endPos,
-      replyTextArea.value.length
-    )
+    const valueFromEnd = replyTextArea.value.slice(endPos)
     replyTextArea.value = `${valueToStart}${text}${valueFromEnd}`
 
     replyTextArea.focus()

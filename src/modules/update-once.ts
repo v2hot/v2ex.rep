@@ -16,7 +16,7 @@ const fetchOnce = async () => {
 export const updateOnce = async () => {
   const once = await fetchOnce()
   if (once) {
-    window.once = once
+    globalThis.once = once
     if ($("#once")) {
       $("#once").value = once
     }

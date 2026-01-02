@@ -85,7 +85,7 @@ export const showTopReplies = (
     const box = createElement("div", {
       class: "box",
       id: "top_replies",
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+
       innerHTML: `<div class="cell"><div class="fr"></div><span class="fade">当前页热门回复</span></div>`,
     })
 
