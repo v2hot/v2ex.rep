@@ -86,6 +86,8 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- 1.6.1
+  - 浏览器扩展版本支持打开设置功能
 - 1.6.0
   - 支持同时上传多个图片
   - 图片上传建议使用[通用图片上传助手](https://greasyfork.org/zh-CN/scripts/553341-universal-image-uploader)
