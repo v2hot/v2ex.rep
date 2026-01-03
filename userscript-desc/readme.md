@@ -121,6 +121,9 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- 1.6.2
+  - 修复无法预加载所有分页的问题
+  - 修复手机版分页按钮样式问题
 - 1.6.1
   - 浏览器扩展版本支持打开设置功能
 - 1.6.0
