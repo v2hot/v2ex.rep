@@ -166,17 +166,12 @@ const settingsTable = {
 let fixedReplyFloorNumbers = false
 
 async function applyAll() {
-  const opaticyOfCitedReplies = getSettingsValue<string>(
-    "opaticyOfCitedReplies"
-  )
-  if (doc.documentElement) {
-    doc.documentElement.dataset.vrOpaticyOfCitedReplies = opaticyOfCitedReplies
-  }
-
   const domReady =
     doc.readyState === "interactive" || doc.readyState === "complete"
+  const domCompleted = doc.readyState === "complete"
+  const mainContentReady = Boolean($("#Wrapper"))
 
-  if (doc.readyState === "complete" && getSettingsValue("dailyCheckIn")) {
+  if (domCompleted && mainContentReady && getSettingsValue("dailyCheckIn")) {
     // Run on every page
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     runOnce("dailyCheckIn", () => {
@@ -186,7 +181,15 @@ async function applyAll() {
 
   replaceFavicon(getSettingsValue("replaceFavicon"))
 
-  if (/\/t\/\d+/.test(location.href)) {
+  if (domReady && mainContentReady && /\/t\/\d+/.test(location.href)) {
+    if (doc.documentElement && doc.documentElement.dataset) {
+      const opaticyOfCitedReplies = getSettingsValue<string>(
+        "opaticyOfCitedReplies"
+      )
+      doc.documentElement.dataset.vrOpaticyOfCitedReplies =
+        opaticyOfCitedReplies
+    }
+
     const replyElements = getReplyElements()
     for (const replyElement of replyElements) {
       if (!$(".reply_content", replyElement)) {
@@ -230,36 +233,30 @@ async function applyAll() {
       }
     }
 
-    if (domReady) {
-      showTopReplies(replyElements, getSettingsValue("showTopReplies"))
-    }
+    showTopReplies(replyElements, getSettingsValue("showTopReplies"))
 
     stickyTopicButtons(getSettingsValue("stickyTopicButtons"))
 
     filterRepliesByUser(getSettingsValue("filterRepliesByUser"))
 
-    if (
-      domReady &&
-      getSettingsValue("fixReplyFloorNumbers") &&
-      !fixedReplyFloorNumbers
-    ) {
+    if (getSettingsValue("fixReplyFloorNumbers") && !fixedReplyFloorNumbers) {
       await fixReplyFloorNumbers(replyElements)
     }
 
-    if (domReady && getSettingsValue("uploadImage")) {
+    if (getSettingsValue("uploadImage")) {
       uploadImage()
     }
 
-    if (domReady && getSettingsValue("removeLocationHash")) {
+    if (getSettingsValue("removeLocationHash")) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       runOnce("main:removeLocationHash", removeLocationHash)
     }
 
-    if (domReady && getSettingsValue("quickNavigation")) {
+    if (getSettingsValue("quickNavigation")) {
       quickNavigation()
     }
 
-    if (doc.readyState === "complete" && getSettingsValue("loadMultiPages")) {
+    if (domCompleted && getSettingsValue("loadMultiPages")) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       runOnce("main:loadMultiPages", () => {
         setTimeout(loadMultiPages, 1000)

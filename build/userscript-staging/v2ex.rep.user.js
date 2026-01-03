@@ -3361,6 +3361,10 @@
     })
   }
   var uploadImage = () => {
+    const replyTextArea = getReplyInputElement()
+    if (!replyTextArea) {
+      return
+    }
     runOnce("uploadImage:init", init)
   }
   if (false) {
@@ -3489,20 +3493,22 @@
   }
   var fixedReplyFloorNumbers = false
   async function applyAll() {
-    const opaticyOfCitedReplies = getSettingsValue("opaticyOfCitedReplies")
-    if (doc.documentElement) {
-      doc.documentElement.dataset.vrOpaticyOfCitedReplies =
-        opaticyOfCitedReplies
-    }
     const domReady =
       doc.readyState === "interactive" || doc.readyState === "complete"
-    if (doc.readyState === "complete" && getSettingsValue("dailyCheckIn")) {
+    const domCompleted = doc.readyState === "complete"
+    const mainContentReady = Boolean($("#Wrapper"))
+    if (domCompleted && mainContentReady && getSettingsValue("dailyCheckIn")) {
       runOnce("dailyCheckIn", () => {
         setTimeout(dailyCheckIn, 1e3)
       })
     }
     replaceFavicon(getSettingsValue("replaceFavicon"))
-    if (/\/t\/\d+/.test(location.href)) {
+    if (domReady && mainContentReady && /\/t\/\d+/.test(location.href)) {
+      if (doc.documentElement && doc.documentElement.dataset) {
+        const opaticyOfCitedReplies = getSettingsValue("opaticyOfCitedReplies")
+        doc.documentElement.dataset.vrOpaticyOfCitedReplies =
+          opaticyOfCitedReplies
+      }
       const replyElements = getReplyElements()
       for (const replyElement of replyElements) {
         if (!$(".reply_content", replyElement)) {
@@ -3535,28 +3541,22 @@
           )
         }
       }
-      if (domReady) {
-        showTopReplies(replyElements, getSettingsValue("showTopReplies"))
-      }
+      showTopReplies(replyElements, getSettingsValue("showTopReplies"))
       stickyTopicButtons(getSettingsValue("stickyTopicButtons"))
       filterRepliesByUser(getSettingsValue("filterRepliesByUser"))
-      if (
-        domReady &&
-        getSettingsValue("fixReplyFloorNumbers") &&
-        !fixedReplyFloorNumbers
-      ) {
+      if (getSettingsValue("fixReplyFloorNumbers") && !fixedReplyFloorNumbers) {
         await fixReplyFloorNumbers(replyElements)
       }
-      if (domReady && getSettingsValue("uploadImage")) {
+      if (getSettingsValue("uploadImage")) {
         uploadImage()
       }
-      if (domReady && getSettingsValue("removeLocationHash")) {
+      if (getSettingsValue("removeLocationHash")) {
         runOnce("main:removeLocationHash", removeLocationHash)
       }
-      if (domReady && getSettingsValue("quickNavigation")) {
+      if (getSettingsValue("quickNavigation")) {
         quickNavigation()
       }
-      if (doc.readyState === "complete" && getSettingsValue("loadMultiPages")) {
+      if (domCompleted && getSettingsValue("loadMultiPages")) {
         runOnce("main:loadMultiPages", () => {
           setTimeout(loadMultiPages, 1e3)
         })

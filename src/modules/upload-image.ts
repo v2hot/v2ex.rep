@@ -286,6 +286,11 @@ const init = () => {
 }
 
 export const uploadImage = () => {
+  const replyTextArea = getReplyInputElement()
+  if (!replyTextArea) {
+    return
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   runOnce("uploadImage:init", init)
 }
