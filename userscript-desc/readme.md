@@ -121,6 +121,8 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- 1.6.3
+  - 兼容 utags-shortcuts 在 iframe 模式下运行
 - 1.6.2
   - 修复无法预加载所有分页的问题
   - 修复手机版分页按钮样式问题

@@ -4,7 +4,7 @@
 // @namespace            https://github.com/v2hot/v2ex.rep
 // @homepageURL          https://github.com/v2hot/v2ex.rep#readme
 // @supportURL           https://github.com/v2hot/v2ex.rep/issues
-// @version              1.6.2
+// @version              1.6.3
 // @description          专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @description:zh-CN    专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @icon                 https://www.v2ex.com/favicon.ico
@@ -3361,6 +3361,10 @@
     })
   }
   var uploadImage = () => {
+    const replyTextArea = getReplyInputElement()
+    if (!replyTextArea) {
+      return
+    }
     runOnce("uploadImage:init", init)
   }
   if (false) {
@@ -3489,20 +3493,22 @@
   }
   var fixedReplyFloorNumbers = false
   async function applyAll() {
-    const opaticyOfCitedReplies = getSettingsValue("opaticyOfCitedReplies")
-    if (doc.documentElement) {
-      doc.documentElement.dataset.vrOpaticyOfCitedReplies =
-        opaticyOfCitedReplies
-    }
     const domReady =
       doc.readyState === "interactive" || doc.readyState === "complete"
-    if (doc.readyState === "complete" && getSettingsValue("dailyCheckIn")) {
+    const domCompleted = doc.readyState === "complete"
+    const mainContentReady = Boolean($("#Wrapper"))
+    if (domCompleted && mainContentReady && getSettingsValue("dailyCheckIn")) {
       runOnce("dailyCheckIn", () => {
         setTimeout(dailyCheckIn, 1e3)
       })
     }
     replaceFavicon(getSettingsValue("replaceFavicon"))
-    if (/\/t\/\d+/.test(location.href)) {
+    if (domReady && mainContentReady && /\/t\/\d+/.test(location.href)) {
+      if (doc.documentElement && doc.documentElement.dataset) {
+        const opaticyOfCitedReplies = getSettingsValue("opaticyOfCitedReplies")
+        doc.documentElement.dataset.vrOpaticyOfCitedReplies =
+          opaticyOfCitedReplies
+      }
       const replyElements = getReplyElements()
       for (const replyElement of replyElements) {
         if (!$(".reply_content", replyElement)) {
@@ -3535,28 +3541,22 @@
           )
         }
       }
-      if (domReady) {
-        showTopReplies(replyElements, getSettingsValue("showTopReplies"))
-      }
+      showTopReplies(replyElements, getSettingsValue("showTopReplies"))
       stickyTopicButtons(getSettingsValue("stickyTopicButtons"))
       filterRepliesByUser(getSettingsValue("filterRepliesByUser"))
-      if (
-        domReady &&
-        getSettingsValue("fixReplyFloorNumbers") &&
-        !fixedReplyFloorNumbers
-      ) {
+      if (getSettingsValue("fixReplyFloorNumbers") && !fixedReplyFloorNumbers) {
         await fixReplyFloorNumbers(replyElements)
       }
-      if (domReady && getSettingsValue("uploadImage")) {
+      if (getSettingsValue("uploadImage")) {
         uploadImage()
       }
-      if (domReady && getSettingsValue("removeLocationHash")) {
+      if (getSettingsValue("removeLocationHash")) {
         runOnce("main:removeLocationHash", removeLocationHash)
       }
-      if (domReady && getSettingsValue("quickNavigation")) {
+      if (getSettingsValue("quickNavigation")) {
         quickNavigation()
       }
-      if (doc.readyState === "complete" && getSettingsValue("loadMultiPages")) {
+      if (domCompleted && getSettingsValue("loadMultiPages")) {
         runOnce("main:loadMultiPages", () => {
           setTimeout(loadMultiPages, 1e3)
         })
