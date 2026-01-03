@@ -6,7 +6,7 @@ function IndexPopup() {
         api.tabs.query({ active: true, currentWindow: true }, (tabs: any[]) => {
           const tabId = tabs?.[0]?.id
           if (tabId) {
-            api.tabs.sendMessage(tabId, { type: "links-helper:show-settings" })
+            api.tabs.sendMessage(tabId, { type: "v2ex.rep:show-settings" })
             try {
               window.close()
             } catch {}

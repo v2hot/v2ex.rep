@@ -51,7 +51,7 @@ if (
   const runtime =
     (globalThis as any).chrome?.runtime ?? (globalThis as any).browser?.runtime
   runtime?.onMessage?.addListener((message: any) => {
-    if (message?.type === "links-helper:show-settings") {
+    if (message?.type === "v2ex.rep:show-settings") {
       void showSettings()
     }
   })
