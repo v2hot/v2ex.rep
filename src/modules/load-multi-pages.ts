@@ -5,6 +5,7 @@ import {
   addClass,
   addEventListener,
   createElement,
+  getAttribute,
   hasClass,
   parseInt10,
   removeClass,
@@ -120,8 +121,26 @@ const updatePagingElements = () => {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   runOnce("loadMultiPages:updatePagingElements", () => {
     for (const pagingElement of $$(".page_current,.page_normal")) {
-      addEventListener(pagingElement, "click", (event) => {
-        const page = pagingElement.textContent as string | undefined
+      let element = pagingElement
+      // Convert SPAN tag to A tag
+      if (pagingElement.tagName === "SPAN") {
+        const page = pagingElement.textContent
+        if (page) {
+          const urlObj = new URL(location.href)
+          urlObj.searchParams.set("p", page)
+          const href = urlObj.toString()
+          const aElement = createElement("a", {
+            href,
+            class: getAttribute(pagingElement, "class"),
+          })
+          aElement.textContent = page
+          pagingElement.replaceWith(aElement)
+          element = aElement
+        }
+      }
+
+      addEventListener(element, "click", (event) => {
+        const page = element.textContent
         gotoPage(page, event)
       })
     }
