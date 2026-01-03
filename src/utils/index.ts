@@ -9,7 +9,7 @@ import {
 } from "browser-extension-utils"
 
 // 从含有第一个评论的 box div 查询
-export const getReplyElements = () => {
+export const getReplyElements = (): HTMLElement[] => {
   const firstReply = $('.box .cell[id^="r_"]')
   if (firstReply?.parentElement) {
     const v2exPolishModel = $(".v2p-model-mask")
@@ -26,7 +26,7 @@ export const getReplyElements = () => {
 }
 
 let cachedReplyElements: HTMLElement[] | undefined
-export const getCachedReplyElements = () => {
+export const getCachedReplyElements = (): HTMLElement[] => {
   if (!cachedReplyElements) {
     if (doc.readyState === "loading") {
       return getReplyElements()
@@ -142,11 +142,17 @@ export const parseUrl = () => {
   return { topicId, page }
 }
 
-export const getRepliesCount = () =>
-  parseInt10(
-    (/(\d+)\s条回复/.exec($(".box .cell .gray")?.textContent || "") || [])[1],
-    0
-  )
+export const getRepliesCount = () => {
+  const elements = $$(".box .cell .gray")
+  for (const element of elements) {
+    const matched = /(\d+)\s条回复/.exec(element.textContent || "") || []
+    if (matched[1]) {
+      return parseInt10(matched[1], 0)
+    }
+  }
+
+  return 0
+}
 
 export const getMemberIdFromMemberLink = (memberLink: HTMLAnchorElement) => {
   if (!memberLink) {

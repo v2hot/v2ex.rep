@@ -1672,13 +1672,14 @@
     return { topicId, page }
   }
   var getRepliesCount = () => {
-    var _a
-    return parseInt10(
-      (/(\d+)\s条回复/.exec(
-        ((_a = $(".box .cell .gray")) == null ? void 0 : _a.textContent) || ""
-      ) || [])[1],
-      0
-    )
+    const elements = $$(".box .cell .gray")
+    for (const element of elements) {
+      const matched = /(\d+)\s条回复/.exec(element.textContent || "") || []
+      if (matched[1]) {
+        return parseInt10(matched[1], 0)
+      }
+    }
+    return 0
   }
   var getMemberIdFromMemberLink = (memberLink) => {
     if (!memberLink) {
@@ -2595,7 +2596,7 @@
     if (!page) {
       return
     }
-    history.pushState(null, null, "?p=".concat(page))
+    history.pushState(null, "", "?p=".concat(page))
     const main2 = $("#Main") || $(".content")
     const firstReply = $('.cell[data-page="'.concat(page, '"]'), main2)
     if (firstReply) {
@@ -2613,7 +2614,7 @@
       }
     }
     for (const pageInput of $$(".page_input")) {
-      pageInput.value = page
+      pageInput.value = String(page)
     }
     const repliesCount = getRepliesCount()
     const totalPage = Math.ceil(repliesCount / 100)
@@ -2647,7 +2648,7 @@
           "keydown",
           (event) => {
             var _a
-            if (event.keyCode === 13) {
+            if (event.key === "Enter") {
               gotoPage((_a = event.target) == null ? void 0 : _a.value, event)
               return false
             }
@@ -2727,12 +2728,16 @@
   }
   var loadMultiPages = async () => {
     const repliesCount = getRepliesCount()
+    console.info("[V2EX.REP] \u603B\u56DE\u590D\u6570", repliesCount)
     if (repliesCount > 100) {
       const result = parseUrl()
       const topicId = result.topicId
       const currentPage = result.page
       const totalPage = Math.ceil(repliesCount / 100)
       const orgReplyElements = getCachedReplyElements()
+      if (orgReplyElements.length === 0) {
+        return
+      }
       const firstReply = orgReplyElements[0]
       const pageElement = orgReplyElements.at(-1).nextElementSibling
       addClass(pageElement, "sticky_paging")

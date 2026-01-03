@@ -72,7 +72,7 @@ const gotoPage = (page: string | number | undefined, event: Event) => {
     return
   }
 
-  history.pushState(null, null, `?p=${page}`)
+  history.pushState(null, "", `?p=${page}`)
 
   const main = $("#Main") || $(".content")
   const firstReply = $(`.cell[data-page="${page}"]`, main)
@@ -93,7 +93,7 @@ const gotoPage = (page: string | number | undefined, event: Event) => {
   }
 
   for (const pageInput of $$(".page_input")) {
-    pageInput.value = page
+    ;(pageInput as HTMLInputElement).value = String(page)
   }
 
   const repliesCount = getRepliesCount()
@@ -131,9 +131,9 @@ const updatePagingElements = () => {
       addEventListener(
         pageInput,
         "keydown",
-        (event) => {
-          if (event.keyCode === 13) {
-            gotoPage(event.target?.value as string, event)
+        (event: KeyboardEvent) => {
+          if (event.key === "Enter") {
+            gotoPage((event.target as HTMLInputElement)?.value, event)
             return false
           }
         },
@@ -190,7 +190,9 @@ const updatePagingElements = () => {
         "click",
         (event) => {
           if (!hasClass(button, "disable_now")) {
-            const page = parseInt10($(".page_input")?.value as string)
+            const page = parseInt10(
+              ($(".page_input") as HTMLInputElement)?.value
+            )
             if (page) {
               if (hasClass(button, "normal_page_right")) {
                 gotoPage(page + 1, event)
@@ -215,14 +217,19 @@ const updatePagingElements = () => {
 
 export const loadMultiPages = async () => {
   const repliesCount = getRepliesCount()
+  console.info("[V2EX.REP] 总回复数", repliesCount)
   if (repliesCount > 100) {
     const result = parseUrl()
     const topicId = result.topicId
     const currentPage = result.page
     const totalPage = Math.ceil(repliesCount / 100)
     const orgReplyElements = getCachedReplyElements()
+    if (orgReplyElements.length === 0) {
+      return
+    }
+
     const firstReply = orgReplyElements[0]
-    const pageElement = orgReplyElements.at(-1)
+    const pageElement = orgReplyElements.at(-1)!
       .nextElementSibling as HTMLElement
 
     addClass(pageElement, "sticky_paging")
