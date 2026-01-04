@@ -6,20 +6,20 @@ import {
   hasClass,
   parseInt10,
   removeClass,
-} from "browser-extension-utils"
+} from 'browser-extension-utils'
 
 import {
   cloneReplyElement,
   sortReplyElementsByFloorNumberCompareFn,
-} from "../utils"
+} from '../utils'
 
 let done = false
 
 const reset = () => {
-  const element = $("#top_replies")
+  const element = $('#top_replies')
   if (element) {
     const sep20 = element.previousElementSibling
-    if (hasClass(sep20, "sep20")) {
+    if (hasClass(sep20, 'sep20')) {
       sep20.remove()
     }
 
@@ -34,7 +34,7 @@ export const showTopReplies = (
 ) => {
   if (!toggle) {
     reset()
-    removeClass($("#Wrapper"), "sticky_rightbar")
+    removeClass($('#Wrapper'), 'sticky_rightbar')
     done = false
     return
   }
@@ -47,7 +47,7 @@ export const showTopReplies = (
 
   reset()
 
-  addClass($("#Wrapper"), "sticky_rightbar")
+  addClass($('#Wrapper'), 'sticky_rightbar')
 
   const topReplies = replyElements
     .filter((reply) => {
@@ -55,7 +55,7 @@ export const showTopReplies = (
       const heartElement = $('img[alt="❤️"],.v2p-icon-heart', reply)
       if (heartElement) {
         /* handle cited replies, v2ex polish child replies */
-        const childReplies = $$(".reply_content,.cell", reply)
+        const childReplies = $$('.reply_content,.cell', reply)
         for (const child of childReplies) {
           if (child.contains(heartElement)) {
             return false
@@ -82,28 +82,28 @@ export const showTopReplies = (
   // .slice(0, 10)
 
   if (topReplies.length > 0) {
-    const box = createElement("div", {
-      class: "box",
-      id: "top_replies",
+    const box = createElement('div', {
+      class: 'box',
+      id: 'top_replies',
 
       innerHTML: `<div class="cell"><div class="fr"></div><span class="fade">当前页热门回复</span></div>`,
     })
 
     for (const element of topReplies) {
       const cloned = cloneReplyElement(element, true)
-      cloned.id = "top_" + element.id
+      cloned.id = 'top_' + element.id
 
-      const ago = $(".ago", cloned)
+      const ago = $('.ago', cloned)
       if (ago) {
-        ago.before(createElement("br"))
+        ago.before(createElement('br'))
       }
 
       box.append(cloned)
     }
 
-    const appendPosition = $("#Rightbar .box")
-    const sep20 = createElement("div", {
-      class: "sep20",
+    const appendPosition = $('#Rightbar .box')
+    const sep20 = createElement('div', {
+      class: 'sep20',
     })
     if (appendPosition) {
       appendPosition.after(box)

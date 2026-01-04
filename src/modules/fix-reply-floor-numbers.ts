@@ -6,18 +6,18 @@ import {
   parseInt10,
   sleep,
   win as window,
-} from "browser-extension-utils"
+} from 'browser-extension-utils'
 
 import {
   getFloorNumberElement,
   getRepliesCount,
   getReplyId,
   parseUrl,
-} from "../utils"
+} from '../utils'
 
 let retryCount = 0
 const getTopicReplies = async (topicId: string, replyCount?: number) => {
-  const cached = cache.get(["getTopicReplies", topicId, replyCount]) as
+  const cached = cache.get(['getTopicReplies', topicId, replyCount]) as
     | Record<string, unknown>
     | undefined
   if (cached) {
@@ -27,7 +27,7 @@ const getTopicReplies = async (topicId: string, replyCount?: number) => {
   const url = `${location.protocol}//${
     location.host
   }/api/replies/show.json?topic_id=${topicId}${
-    replyCount ? "&replyCount=" + String(replyCount) : ""
+    replyCount ? '&replyCount=' + String(replyCount) : ''
   }`
 
   try {
@@ -35,7 +35,7 @@ const getTopicReplies = async (topicId: string, replyCount?: number) => {
 
     if (response.status === 200) {
       const result = (await response.json()) as Record<string, unknown>
-      cache.add(["getTopicReplies", topicId, replyCount], result)
+      cache.add(['getTopicReplies', topicId, replyCount], result)
       return result
     }
   } catch (error) {
@@ -110,7 +110,7 @@ const updateReplyElements = (
     const realFloorNumber = i + dataOffSet + 1
     const reply = replies[i + dataOffSet]
     const id = reply.id as string
-    const element = $("#r_" + id)
+    const element = $('#r_' + id)
     const member = (reply.member as Record<string, any>) || {}
     if (!element) {
       hiddenReplies.push({
@@ -188,7 +188,7 @@ const updateReplyElements = (
 
   printHiddenReplies(hiddenReplies)
   // 触发更新事件
-  window.dispatchEvent(new Event("floorNumberUpdated"))
+  window.dispatchEvent(new Event('floorNumberUpdated'))
 }
 
 let isRunning = false
@@ -262,7 +262,7 @@ const startFix = async (
     }
 
     if (replies.length < displayNumber) {
-      console.info("[V2EX.REP] API data outdated, re-fetch it")
+      console.info('[V2EX.REP] API data outdated, re-fetch it')
       setTimeout(async () => {
         await startFix(topicId, page, displayNumber, replyElements, true)
       }, 100)

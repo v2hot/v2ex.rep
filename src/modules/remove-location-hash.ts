@@ -1,7 +1,7 @@
-import { getRepliesCount } from "../utils"
+import { getRepliesCount } from '../utils'
 
 const replaceState = (newHref: string) => {
-  history.replaceState(null, "", newHref)
+  history.replaceState(null, '', newHref)
 }
 
 const getVisitedUrl = (href: string, replyCount: number) =>
@@ -19,12 +19,12 @@ export const removeLocationHash = () => {
   const href = location.href
   const hash = location.hash
   const replyCount = getRepliesCount()
-  if (hash?.startsWith("#reply")) {
+  if (hash?.startsWith('#reply')) {
     if (replyCount) {
       markAsVisited(href, replyCount)
     }
 
-    replaceState(href.replace(/#.*/, ""))
+    replaceState(href.replace(/#.*/, ''))
   } else if (replyCount) {
     markAsVisited(href, replyCount)
     replaceState(href)

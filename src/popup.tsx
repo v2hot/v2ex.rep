@@ -6,7 +6,7 @@ function IndexPopup() {
         api.tabs.query({ active: true, currentWindow: true }, (tabs: any[]) => {
           const tabId = tabs?.[0]?.id
           if (tabId) {
-            api.tabs.sendMessage(tabId, { type: "v2ex.rep:show-settings" })
+            api.tabs.sendMessage(tabId, { type: 'v2ex.rep:show-settings' })
             try {
               window.close()
             } catch {}
@@ -26,21 +26,21 @@ function IndexPopup() {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        textAlign: "center",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
         padding: 16,
-        width: "300px",
+        width: '300px',
       }}>
       <h1>V2EX.REP</h1>
       <button
         onClick={openSettings}
-        style={{ marginTop: 8, marginBottom: 20, width: "100%" }}>
+        style={{ marginTop: 8, marginBottom: 20, width: '100%' }}>
         设置
       </button>
       <footer>
-        Made with ❤️ by{" "}
+        Made with ❤️ by{' '}
         <a href="https://www.pipecraft.net/" target="_blank">
           Pipecraft
         </a>

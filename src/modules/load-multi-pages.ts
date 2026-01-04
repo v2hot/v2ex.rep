@@ -1,4 +1,4 @@
-import { getSettingsValue } from "browser-extension-settings"
+import { getSettingsValue } from 'browser-extension-settings'
 import {
   $,
   $$,
@@ -12,7 +12,7 @@ import {
   runOnce,
   sleep,
   win as window,
-} from "browser-extension-utils"
+} from 'browser-extension-utils'
 
 import {
   getCachedReplyElements,
@@ -20,8 +20,8 @@ import {
   getPagingPreviousButtons,
   getRepliesCount,
   parseUrl,
-} from "../utils"
-import { lazyLoadAvatars } from "./lazy-load-avatars"
+} from '../utils'
+import { lazyLoadAvatars } from './lazy-load-avatars'
 
 let retryCount = 0
 const getTopicPage = async (topicId: string, page = 1) => {
@@ -44,7 +44,7 @@ const getTopicPage = async (topicId: string, page = 1) => {
 }
 
 const getReplyElements = (html: string) => {
-  const htmlNode = createElement("html")
+  const htmlNode = createElement('html')
   htmlNode.innerHTML = html
   return $$('.cell[id^="r_"]', htmlNode)
 }
@@ -60,7 +60,7 @@ const insertReplyElementsToPage = (
 
   for (const replyElement of replyElements) {
     replyElement.dataset.page = String(page)
-    if (getSettingsValue("lazyLoadAvatars")) {
+    if (getSettingsValue('lazyLoadAvatars')) {
       lazyLoadAvatars(replyElement)
     }
 
@@ -73,27 +73,27 @@ const gotoPage = (page: string | number | undefined, event: Event) => {
     return
   }
 
-  history.pushState(null, "", `?p=${page}`)
+  history.pushState(null, '', `?p=${page}`)
 
-  const main = $("#Main") || $(".content")
+  const main = $('#Main') || $('.content')
   const firstReply = $(`.cell[data-page="${page}"]`, main)
   if (firstReply) {
-    firstReply.scrollIntoView({ block: "start" })
+    firstReply.scrollIntoView({ block: 'start' })
     event.preventDefault()
     event.stopImmediatePropagation()
   }
 
-  for (const pagingElement of $$(".page_current,.page_normal")) {
+  for (const pagingElement of $$('.page_current,.page_normal')) {
     if (pagingElement.textContent === String(page)) {
-      removeClass(pagingElement, "page_normal")
-      addClass(pagingElement, "page_current")
+      removeClass(pagingElement, 'page_normal')
+      addClass(pagingElement, 'page_current')
     } else {
-      removeClass(pagingElement, "page_current")
-      addClass(pagingElement, "page_normal")
+      removeClass(pagingElement, 'page_current')
+      addClass(pagingElement, 'page_normal')
     }
   }
 
-  for (const pageInput of $$(".page_input")) {
+  for (const pageInput of $$('.page_input')) {
     ;(pageInput as HTMLInputElement).value = String(page)
   }
 
@@ -101,37 +101,37 @@ const gotoPage = (page: string | number | undefined, event: Event) => {
   const totalPage = Math.ceil(repliesCount / 100)
 
   for (const button of getPagingPreviousButtons()) {
-    if (String(page) === "1") {
-      addClass(button, "disable_now")
+    if (String(page) === '1') {
+      addClass(button, 'disable_now')
     } else {
-      removeClass(button, "disable_now")
+      removeClass(button, 'disable_now')
     }
   }
 
   for (const button of getPagingNextButtons()) {
     if (String(page) === String(totalPage)) {
-      addClass(button, "disable_now")
+      addClass(button, 'disable_now')
     } else {
-      removeClass(button, "disable_now")
+      removeClass(button, 'disable_now')
     }
   }
 }
 
 const updatePagingElements = () => {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  runOnce("loadMultiPages:updatePagingElements", () => {
-    for (const pagingElement of $$(".page_current,.page_normal")) {
+  runOnce('loadMultiPages:updatePagingElements', () => {
+    for (const pagingElement of $$('.page_current,.page_normal')) {
       let element = pagingElement
       // Convert SPAN tag to A tag
-      if (pagingElement.tagName === "SPAN") {
+      if (pagingElement.tagName === 'SPAN') {
         const page = pagingElement.textContent
         if (page) {
           const urlObj = new URL(location.href)
-          urlObj.searchParams.set("p", page)
+          urlObj.searchParams.set('p', page)
           const href = urlObj.toString()
-          const aElement = createElement("a", {
+          const aElement = createElement('a', {
             href,
-            class: getAttribute(pagingElement, "class"),
+            class: getAttribute(pagingElement, 'class'),
           })
           aElement.textContent = page
           pagingElement.replaceWith(aElement)
@@ -139,19 +139,19 @@ const updatePagingElements = () => {
         }
       }
 
-      addEventListener(element, "click", (event) => {
+      addEventListener(element, 'click', (event) => {
         const page = element.textContent
         gotoPage(page, event)
       })
     }
 
-    for (const pageInput of $$(".page_input")) {
-      pageInput.removeAttribute("onkeydown")
+    for (const pageInput of $$('.page_input')) {
+      pageInput.removeAttribute('onkeydown')
       addEventListener(
         pageInput,
-        "keydown",
+        'keydown',
         (event: KeyboardEvent) => {
-          if (event.key === "Enter") {
+          if (event.key === 'Enter') {
             gotoPage((event.target as HTMLInputElement)?.value, event)
             return false
           }
@@ -162,16 +162,16 @@ const updatePagingElements = () => {
 
     const buttons = [...getPagingPreviousButtons(), ...getPagingNextButtons()]
     for (const button of buttons) {
-      button.removeAttribute("onclick")
-      button.removeAttribute("onmouseover")
-      button.removeAttribute("onmousedown")
-      button.removeAttribute("onmouseleave")
+      button.removeAttribute('onclick')
+      button.removeAttribute('onmouseover')
+      button.removeAttribute('onmousedown')
+      button.removeAttribute('onmouseleave')
       addEventListener(
         button,
-        "mouseover",
+        'mouseover',
         (event) => {
-          if (!hasClass(button, "disable_now")) {
-            addClass(button, "hover_now")
+          if (!hasClass(button, 'disable_now')) {
+            addClass(button, 'hover_now')
           }
 
           event.preventDefault()
@@ -181,10 +181,10 @@ const updatePagingElements = () => {
       )
       addEventListener(
         button,
-        "mousedown",
+        'mousedown',
         (event) => {
-          if (!hasClass(button, "disable_now")) {
-            addClass(button, "active_now")
+          if (!hasClass(button, 'disable_now')) {
+            addClass(button, 'active_now')
           }
 
           event.preventDefault()
@@ -194,10 +194,10 @@ const updatePagingElements = () => {
       )
       addEventListener(
         button,
-        "mouseleave",
+        'mouseleave',
         (event) => {
-          removeClass(button, "hover_now")
-          removeClass(button, "active_now")
+          removeClass(button, 'hover_now')
+          removeClass(button, 'active_now')
           event.preventDefault()
           event.stopImmediatePropagation()
         },
@@ -206,14 +206,14 @@ const updatePagingElements = () => {
 
       addEventListener(
         button,
-        "click",
+        'click',
         (event) => {
-          if (!hasClass(button, "disable_now")) {
+          if (!hasClass(button, 'disable_now')) {
             const page = parseInt10(
-              ($(".page_input") as HTMLInputElement)?.value
+              ($('.page_input') as HTMLInputElement)?.value
             )
             if (page) {
-              if (hasClass(button, "normal_page_right")) {
+              if (hasClass(button, 'normal_page_right')) {
                 gotoPage(page + 1, event)
               } else {
                 gotoPage(page - 1, event)
@@ -222,8 +222,8 @@ const updatePagingElements = () => {
           }
 
           setTimeout(() => {
-            removeClass(button, "hover_now")
-            removeClass(button, "active_now")
+            removeClass(button, 'hover_now')
+            removeClass(button, 'active_now')
           }, 100)
           event.preventDefault()
           event.stopImmediatePropagation()
@@ -236,7 +236,7 @@ const updatePagingElements = () => {
 
 export const loadMultiPages = async () => {
   const repliesCount = getRepliesCount()
-  console.info("[V2EX.REP] 总回复数", repliesCount)
+  console.info('[V2EX.REP] 总回复数', repliesCount)
   if (repliesCount > 100) {
     const result = parseUrl()
     const topicId = result.topicId
@@ -251,7 +251,7 @@ export const loadMultiPages = async () => {
     const pageElement = orgReplyElements.at(-1)!
       .nextElementSibling as HTMLElement
 
-    addClass(pageElement, "sticky_paging")
+    addClass(pageElement, 'sticky_paging')
     updatePagingElements()
 
     for (const replyElement of orgReplyElements) {
@@ -263,7 +263,7 @@ export const loadMultiPages = async () => {
         continue
       }
 
-      console.info("[V2EX.REP] Fetching page", i)
+      console.info('[V2EX.REP] Fetching page', i)
       // eslint-disable-next-line no-await-in-loop
       const html = (await getTopicPage(topicId, i)) as string
       if (html) {
@@ -274,7 +274,7 @@ export const loadMultiPages = async () => {
           i < currentPage ? firstReply : pageElement
         )
         // 触发更新事件
-        window.dispatchEvent(new Event("replyElementsLengthUpdated"))
+        window.dispatchEvent(new Event('replyElementsLengthUpdated'))
       }
 
       // eslint-disable-next-line no-await-in-loop

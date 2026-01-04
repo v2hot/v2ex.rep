@@ -1,11 +1,11 @@
-import { $, $$, addClass, hasClass, parseInt10 } from "browser-extension-utils"
+import { $, $$, addClass, hasClass, parseInt10 } from 'browser-extension-utils'
 
 import {
   cloneReplyElement,
   getFloorNumber,
   getMemberIdFromMemberLink,
   getReplyElementByMemberIdAndFloorNumber,
-} from "../utils"
+} from '../utils'
 
 export const showCitedReplies = (
   replyElement: HTMLElement,
@@ -15,7 +15,7 @@ export const showCitedReplies = (
   // Don't show cited replies if v2ex plish extension is enabled
   if (
     !forceUpdate &&
-    (replyElement.dataset.showCitedReplies || $(".v2p-color-mode-toggle"))
+    (replyElement.dataset.showCitedReplies || $('.v2p-color-mode-toggle'))
   ) {
     return
   }
@@ -25,13 +25,13 @@ export const showCitedReplies = (
     return
   }
 
-  replyElement.dataset.showCitedReplies = "done"
+  replyElement.dataset.showCitedReplies = 'done'
 
-  for (const element of $$(".cited_reply", replyElement)) {
+  for (const element of $$('.cited_reply', replyElement)) {
     element.remove()
   }
 
-  const content = $(".reply_content", replyElement)
+  const content = $('.reply_content', replyElement)
   const memberLinks = $$('a[href^="/member/"]', content) as HTMLAnchorElement[]
   let hasCitedReplies = false
   for (const memberLink of memberLinks) {
@@ -43,7 +43,7 @@ export const showCitedReplies = (
       textNode &&
       textNode.nodeType === 3 /* TEXT_NODE */ &&
       textNode.textContent &&
-      textNode.textContent.endsWith("@")
+      textNode.textContent.endsWith('@')
     ) {
       // console.log(memberLink)
       const memberId = getMemberIdFromMemberLink(memberLink)
@@ -53,16 +53,16 @@ export const showCitedReplies = (
 
       while (
         nextElement &&
-        (nextElement.tagName === "BR" ||
+        (nextElement.tagName === 'BR' ||
           !nextElement.textContent ||
           nextElement.textContent.trim().length === 0 ||
-          hasClass(nextElement, "utags_ul"))
+          hasClass(nextElement, 'utags_ul'))
       ) {
         target = nextElement
         nextElement = nextElement.nextSibling as HTMLElement | undefined
       }
 
-      if (nextElement && hasClass(nextElement, "cited_floor_number")) {
+      if (nextElement && hasClass(nextElement, 'cited_floor_number')) {
         target = nextElement
         citedFloorNumber = parseInt10(nextElement.dataset.floorNumber)
       }
@@ -89,15 +89,15 @@ export const showCitedReplies = (
         if (
           citedReplyElement.nextElementSibling === replyElement &&
           !hasCitedReplies &&
-          showPreviousCitedReplies !== "1"
+          showPreviousCitedReplies !== '1'
         ) {
           // 如果引用的是前一个回复，并且没有其他引用的回复，则不显示
           continue
         }
 
         const cloned = cloneReplyElement(citedReplyElement, true)
-        cloned.removeAttribute("id")
-        addClass(cloned, "cited_reply")
+        cloned.removeAttribute('id')
+        addClass(cloned, 'cited_reply')
         // textNode.before(cloned)
         target.after(cloned)
         hasCitedReplies = true

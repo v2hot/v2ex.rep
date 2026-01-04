@@ -6,15 +6,15 @@ import {
   doc,
   hasClass,
   parseInt10,
-} from "browser-extension-utils"
+} from 'browser-extension-utils'
 
 // 从含有第一个评论的 box div 查询
 export const getReplyElements = (): HTMLElement[] => {
   const firstReply = $('.box .cell[id^="r_"]')
   if (firstReply?.parentElement) {
-    const v2exPolishModel = $(".v2p-model-mask")
+    const v2exPolishModel = $('.v2p-model-mask')
     return $$('.cell[id^="r_"]', firstReply.parentElement).filter((reply) => {
-      if (v2exPolishModel && reply.closest(".v2p-model-mask")) {
+      if (v2exPolishModel && reply.closest('.v2p-model-mask')) {
         return false
       }
 
@@ -28,7 +28,7 @@ export const getReplyElements = (): HTMLElement[] => {
 let cachedReplyElements: HTMLElement[] | undefined
 export const getCachedReplyElements = (): HTMLElement[] => {
   if (!cachedReplyElements) {
-    if (doc.readyState === "loading") {
+    if (doc.readyState === 'loading') {
       return getReplyElements()
     }
 
@@ -44,7 +44,7 @@ export const resetCachedReplyElements = () => {
 
 export const getReplyId = (replyElement: HTMLElement | undefined) => {
   if (!replyElement) {
-    return ""
+    return ''
   }
 
   let id = replyElement.dataset.id
@@ -52,13 +52,13 @@ export const getReplyId = (replyElement: HTMLElement | undefined) => {
     return id
   }
 
-  id = replyElement.id.replace(/((top|related|cited)_)?r_/, "")
+  id = replyElement.id.replace(/((top|related|cited)_)?r_/, '')
   replyElement.dataset.id = id
   return id
 }
 
 export const getFloorNumberElement = (replyElement: HTMLElement | undefined) =>
-  replyElement ? $(".no", replyElement) : undefined
+  replyElement ? $('.no', replyElement) : undefined
 
 export const getFloorNumber = (replyElement: HTMLElement | undefined) => {
   if (!replyElement) {
@@ -87,27 +87,27 @@ export const cloneReplyElement = (
 ) => {
   const cloned = replyElement.cloneNode(true) as HTMLElement
 
-  const floorNumber = $(".no", cloned)
-  const toolbox = $(".fr", cloned)
+  const floorNumber = $('.no', cloned)
+  const toolbox = $('.fr', cloned)
   if (toolbox && floorNumber) {
-    const floorNumber2 = createElement("a", {
-      class: "no",
+    const floorNumber2 = createElement('a', {
+      class: 'no',
       textContent: floorNumber.textContent,
     })
-    addEventListener(floorNumber2, "click", (event) => {
-      replyElement.scrollIntoView({ block: "start" })
+    addEventListener(floorNumber2, 'click', (event) => {
+      replyElement.scrollIntoView({ block: 'start' })
       event.preventDefault()
       event.stopPropagation()
     })
-    toolbox.innerHTML = ""
+    toolbox.innerHTML = ''
     toolbox.append(floorNumber2)
   }
 
   // Remove cited replies, child replies
   /* fix v2ex polish, v2ex plus start */
-  const cells = $$(".cell,.v2p-topic-reply-ref,.nested", cloned)
+  const cells = $$('.cell,.v2p-topic-reply-ref,.nested', cloned)
   for (const cell of cells) {
-    if (keepCitedReplies && hasClass(cell, "cited_reply")) {
+    if (keepCitedReplies && hasClass(cell, 'cited_reply')) {
       continue
     }
 
@@ -117,9 +117,9 @@ export const cloneReplyElement = (
   /* fix v2ex polish, v2ex plus end */
   if (wrappingTable) {
     const table = cloned.firstElementChild as HTMLElement
-    if (table && table.tagName === "TABLE") {
-      const wrapper = createElement("div", {
-        class: "vr_wrapper",
+    if (table && table.tagName === 'TABLE') {
+      const wrapper = createElement('div', {
+        class: 'vr_wrapper',
       })
 
       table.after(wrapper)
@@ -143,9 +143,9 @@ export const parseUrl = () => {
 }
 
 export const getRepliesCount = () => {
-  const elements = $$(".box .cell .gray")
+  const elements = $$('.box .cell .gray')
   for (const element of elements) {
-    const matched = /(\d+)\s条回复/.exec(element.textContent || "") || []
+    const matched = /(\d+)\s条回复/.exec(element.textContent || '') || []
     if (matched[1]) {
       return parseInt10(matched[1], 0)
     }
@@ -227,17 +227,17 @@ export const getReplyElementByMemberIdAndFloorNumber = (
 }
 
 export const getPagingPreviousButtons = () =>
-  $$(".normal_page_right").map(
+  $$('.normal_page_right').map(
     (right) => right.previousElementSibling as HTMLElement
   )
-export const getPagingNextButtons = () => $$(".normal_page_right")
+export const getPagingNextButtons = () => $$('.normal_page_right')
 
 export const getReplyInputElement = () =>
-  $("#reply_content") as HTMLTextAreaElement | undefined
+  $('#reply_content') as HTMLTextAreaElement | undefined
 
 export const getReplyInputText = () => {
   const replyTextArea = getReplyInputElement()
-  return replyTextArea ? replyTextArea.value : ""
+  return replyTextArea ? replyTextArea.value : ''
 }
 
 /**
@@ -270,7 +270,7 @@ export const replaceReplyInputText = (
   if (replyTextArea) {
     const value = replyTextArea.value
 
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       const index = value.indexOf(find)
       if (index === -1) {
         return
@@ -288,14 +288,14 @@ export const replaceReplyInputText = (
       replyTextArea.selectionEnd = newPos
 
       if (dispatchInputEvent) {
-        replyTextArea.dispatchEvent(new Event("input"))
+        replyTextArea.dispatchEvent(new Event('input'))
       }
     }
   }
 }
 
 export const getOnce = () => {
-  const onceElement = $("#once") as HTMLInputElement
+  const onceElement = $('#once') as HTMLInputElement
   if (onceElement?.value) {
     return onceElement.value
   }

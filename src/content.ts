@@ -2,7 +2,7 @@ import {
   getSettingsValue,
   initSettings,
   showSettings,
-} from "browser-extension-settings"
+} from 'browser-extension-settings'
 import {
   $,
   addEventListener,
@@ -12,153 +12,153 @@ import {
   runWhenBodyExists,
   throttle,
   win as window,
-} from "browser-extension-utils"
-import styleText from "data-text:./content.scss"
-import type { PlasmoCSConfig } from "plasmo"
+} from 'browser-extension-utils'
+import styleText from 'data-text:./content.scss'
+import type { PlasmoCSConfig } from 'plasmo'
 
-import { addLinkToAvatars } from "./modules/add-link-to-avatars"
-import { addlinkToCitedFloorNumbers } from "./modules/add-link-to-cited-floor-numbers"
-import { alwaysShowHideButton } from "./modules/always-show-hide-button"
-import { alwaysShowThankButton } from "./modules/always-show-thank-button"
-import { dailyCheckIn } from "./modules/daily-check-in"
-import { filterRepliesByUser } from "./modules/filter-repies-by-user"
-import { fixReplyFloorNumbers } from "./modules/fix-reply-floor-numbers"
-import { lazyLoadAvatars } from "./modules/lazy-load-avatars"
-import { loadMultiPages } from "./modules/load-multi-pages"
-import { quickHideReply } from "./modules/quick-hide-reply"
-import { quickNavigation } from "./modules/quick-navigation"
-import { quickSendThank } from "./modules/quick-send-thank"
-import { removeLocationHash } from "./modules/remove-location-hash"
-import { replaceFavicon } from "./modules/replace-favicon"
-import { replyWithFloorNumber } from "./modules/reply-with-floor-number"
-import { showCitedReplies } from "./modules/show-cited-replies"
-import { showTopReplies } from "./modules/show-top-replies"
-import { stickyTopicButtons } from "./modules/sticky-topic-buttons"
-import { uploadImage } from "./modules/upload-image"
+import { addLinkToAvatars } from './modules/add-link-to-avatars'
+import { addlinkToCitedFloorNumbers } from './modules/add-link-to-cited-floor-numbers'
+import { alwaysShowHideButton } from './modules/always-show-hide-button'
+import { alwaysShowThankButton } from './modules/always-show-thank-button'
+import { dailyCheckIn } from './modules/daily-check-in'
+import { filterRepliesByUser } from './modules/filter-repies-by-user'
+import { fixReplyFloorNumbers } from './modules/fix-reply-floor-numbers'
+import { lazyLoadAvatars } from './modules/lazy-load-avatars'
+import { loadMultiPages } from './modules/load-multi-pages'
+import { quickHideReply } from './modules/quick-hide-reply'
+import { quickNavigation } from './modules/quick-navigation'
+import { quickSendThank } from './modules/quick-send-thank'
+import { removeLocationHash } from './modules/remove-location-hash'
+import { replaceFavicon } from './modules/replace-favicon'
+import { replyWithFloorNumber } from './modules/reply-with-floor-number'
+import { showCitedReplies } from './modules/show-cited-replies'
+import { showTopReplies } from './modules/show-top-replies'
+import { stickyTopicButtons } from './modules/sticky-topic-buttons'
+import { uploadImage } from './modules/upload-image'
 import {
   getCachedReplyElements,
   getReplyElements,
   resetCachedReplyElements,
-} from "./utils"
+} from './utils'
 
 if (
   // eslint-disable-next-line n/prefer-global/process
-  process.env.PLASMO_TARGET === "chrome-mv3" ||
+  process.env.PLASMO_TARGET === 'chrome-mv3' ||
   // eslint-disable-next-line n/prefer-global/process
-  process.env.PLASMO_TARGET === "firefox-mv3"
+  process.env.PLASMO_TARGET === 'firefox-mv3'
 ) {
   // Receive popup trigger to show settings in the content context
   const runtime =
     (globalThis as any).chrome?.runtime ?? (globalThis as any).browser?.runtime
   runtime?.onMessage?.addListener((message: any) => {
-    if (message?.type === "v2ex.rep:show-settings") {
+    if (message?.type === 'v2ex.rep:show-settings') {
       void showSettings()
     }
   })
 }
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://*.v2ex.com/*", "https://*.v2ex.co/*"],
-  run_at: "document_start",
+  matches: ['https://*.v2ex.com/*', 'https://*.v2ex.co/*'],
+  run_at: 'document_start',
 }
 
 const settingsTable = {
   fixReplyFloorNumbers: {
-    title: "修复楼层号",
+    title: '修复楼层号',
     defaultValue: true,
   },
   replyWithFloorNumber: {
-    title: "回复时带上楼层号",
+    title: '回复时带上楼层号',
     defaultValue: true,
   },
   showTopReplies: {
-    title: "显示热门回复",
+    title: '显示热门回复',
     defaultValue: true,
   },
   showCitedReplies: {
-    title: "显示被引用的回复",
+    title: '显示被引用的回复',
     defaultValue: true,
   },
   opaticyOfCitedReplies: {
-    title: "被引用的回复上面遮罩的不透明度",
-    type: "select",
+    title: '被引用的回复上面遮罩的不透明度',
+    type: 'select',
     // 默认值：中
-    defaultValue: "2",
+    defaultValue: '2',
     options: {
-      无遮罩: "0",
-      低: "1",
-      中: "2",
-      高: "3",
+      无遮罩: '0',
+      低: '1',
+      中: '2',
+      高: '3',
     },
   },
   showPreviousCitedReplies: {
-    title: "被引用的回复是前一个楼层时",
-    type: "select",
-    defaultValue: "0",
+    title: '被引用的回复是前一个楼层时',
+    type: 'select',
+    defaultValue: '0',
     options: {
-      不显示: "0",
-      始终显示: "1",
+      不显示: '0',
+      始终显示: '1',
     },
   },
   filterRepliesByUser: {
-    title: "查看用户在当前主题下的所有回复与被提及的回复",
+    title: '查看用户在当前主题下的所有回复与被提及的回复',
     description:
-      "鼠标移至用户名，会显示该用户在当前主题下的所有回复与被提及的回复",
+      '鼠标移至用户名，会显示该用户在当前主题下的所有回复与被提及的回复',
     defaultValue: true,
   },
   loadMultiPages: {
-    title: "预加载所有分页",
+    title: '预加载所有分页',
     defaultValue: true,
   },
   uploadImage: {
-    title: "回复时上传图片",
+    title: '回复时上传图片',
     defaultValue: true,
   },
   dailyCheckIn: {
-    title: "每日自动签到",
+    title: '每日自动签到',
     defaultValue: true,
   },
   lazyLoadAvatars: {
-    title: "懒加载用户头像图片",
+    title: '懒加载用户头像图片',
     defaultValue: false,
   },
   quickSendThank: {
-    title: "快速发送感谢",
+    title: '快速发送感谢',
     defaultValue: false,
   },
   alwaysShowThankButton: {
-    title: "一直显示感谢按钮",
+    title: '一直显示感谢按钮',
     defaultValue: false,
   },
   quickHideReply: {
-    title: "快速隐藏回复",
+    title: '快速隐藏回复',
     defaultValue: false,
   },
   alwaysShowHideButton: {
-    title: "一直显示隐藏回复按钮",
+    title: '一直显示隐藏回复按钮',
     defaultValue: false,
   },
   removeLocationHash: {
-    title: "去掉 URL 中的 #replyXX",
+    title: '去掉 URL 中的 #replyXX',
     defaultValue: true,
   },
   stickyTopicButtons: {
-    title: "主题内容底部固定显示按钮栏",
+    title: '主题内容底部固定显示按钮栏',
     defaultValue: true,
   },
   quickNavigation: {
-    title: "双击空白处快速导航",
+    title: '双击空白处快速导航',
     defaultValue: false,
   },
   replaceFavicon: {
-    title: "更换 favicon 图标",
-    type: "select",
-    defaultValue: "default",
+    title: '更换 favicon 图标',
+    type: 'select',
+    defaultValue: 'default',
     options: {
-      默认: "default",
+      默认: 'default',
 
-      GitHub: "github",
-      用户头像: "avatar",
+      GitHub: 'github',
+      用户头像: 'avatar',
     },
   },
 }
@@ -167,24 +167,24 @@ let fixedReplyFloorNumbers = false
 
 async function applyAll() {
   const domReady =
-    doc.readyState === "interactive" || doc.readyState === "complete"
-  const domCompleted = doc.readyState === "complete"
-  const mainContentReady = Boolean($("#Wrapper"))
+    doc.readyState === 'interactive' || doc.readyState === 'complete'
+  const domCompleted = doc.readyState === 'complete'
+  const mainContentReady = Boolean($('#Wrapper'))
 
-  if (domCompleted && mainContentReady && getSettingsValue("dailyCheckIn")) {
+  if (domCompleted && mainContentReady && getSettingsValue('dailyCheckIn')) {
     // Run on every page
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    runOnce("dailyCheckIn", () => {
+    runOnce('dailyCheckIn', () => {
       setTimeout(dailyCheckIn, 1000)
     })
   }
 
-  replaceFavicon(getSettingsValue("replaceFavicon"))
+  replaceFavicon(getSettingsValue('replaceFavicon'))
 
   if (domReady && mainContentReady && /\/t\/\d+/.test(location.href)) {
     if (doc.documentElement && doc.documentElement.dataset) {
       const opaticyOfCitedReplies = getSettingsValue<string>(
-        "opaticyOfCitedReplies"
+        'opaticyOfCitedReplies'
       )
       doc.documentElement.dataset.vrOpaticyOfCitedReplies =
         opaticyOfCitedReplies
@@ -192,73 +192,73 @@ async function applyAll() {
 
     const replyElements = getReplyElements()
     for (const replyElement of replyElements) {
-      if (!$(".reply_content", replyElement)) {
+      if (!$('.reply_content', replyElement)) {
         // 页面加载中，次回复标签还没有加在完整
         continue
       }
 
-      if (getSettingsValue("lazyLoadAvatars")) {
+      if (getSettingsValue('lazyLoadAvatars')) {
         lazyLoadAvatars(replyElement)
       }
 
       addLinkToAvatars(replyElement)
 
-      if (getSettingsValue("replyWithFloorNumber")) {
+      if (getSettingsValue('replyWithFloorNumber')) {
         replyWithFloorNumber(replyElement)
       }
 
-      if (getSettingsValue("alwaysShowThankButton")) {
+      if (getSettingsValue('alwaysShowThankButton')) {
         alwaysShowThankButton(replyElement)
       }
 
-      if (getSettingsValue("alwaysShowHideButton")) {
+      if (getSettingsValue('alwaysShowHideButton')) {
         alwaysShowHideButton(replyElement)
       }
 
-      if (getSettingsValue("quickSendThank")) {
+      if (getSettingsValue('quickSendThank')) {
         quickSendThank(replyElement)
       }
 
-      if (getSettingsValue("quickHideReply")) {
+      if (getSettingsValue('quickHideReply')) {
         quickHideReply(replyElement)
       }
 
       addlinkToCitedFloorNumbers(replyElement)
 
-      if (getSettingsValue("showCitedReplies")) {
+      if (getSettingsValue('showCitedReplies')) {
         showCitedReplies(
           replyElement,
-          getSettingsValue("showPreviousCitedReplies")
+          getSettingsValue('showPreviousCitedReplies')
         )
       }
     }
 
-    showTopReplies(replyElements, getSettingsValue("showTopReplies"))
+    showTopReplies(replyElements, getSettingsValue('showTopReplies'))
 
-    stickyTopicButtons(getSettingsValue("stickyTopicButtons"))
+    stickyTopicButtons(getSettingsValue('stickyTopicButtons'))
 
-    filterRepliesByUser(getSettingsValue("filterRepliesByUser"))
+    filterRepliesByUser(getSettingsValue('filterRepliesByUser'))
 
-    if (getSettingsValue("fixReplyFloorNumbers") && !fixedReplyFloorNumbers) {
+    if (getSettingsValue('fixReplyFloorNumbers') && !fixedReplyFloorNumbers) {
       await fixReplyFloorNumbers(replyElements)
     }
 
-    if (getSettingsValue("uploadImage")) {
+    if (getSettingsValue('uploadImage')) {
       uploadImage()
     }
 
-    if (getSettingsValue("removeLocationHash")) {
+    if (getSettingsValue('removeLocationHash')) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      runOnce("main:removeLocationHash", removeLocationHash)
+      runOnce('main:removeLocationHash', removeLocationHash)
     }
 
-    if (getSettingsValue("quickNavigation")) {
+    if (getSettingsValue('quickNavigation')) {
       quickNavigation()
     }
 
-    if (domCompleted && getSettingsValue("loadMultiPages")) {
+    if (domCompleted && getSettingsValue('loadMultiPages')) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      runOnce("main:loadMultiPages", () => {
+      runOnce('main:loadMultiPages', () => {
         setTimeout(loadMultiPages, 1000)
       })
     }
@@ -267,8 +267,8 @@ async function applyAll() {
 
 async function main() {
   await initSettings(() => ({
-    id: "v2ex.rep",
-    title: "V2EX.REP",
+    id: 'v2ex.rep',
+    title: 'V2EX.REP',
     footer: `
     <p>更改设置后，需要重新加载页面</p>
     <p>
@@ -296,19 +296,19 @@ async function main() {
     floorNumberUpdated() {
       fixedReplyFloorNumbers = true
       if (
-        getSettingsValue("replyWithFloorNumber") ||
-        getSettingsValue("showCitedReplies")
+        getSettingsValue('replyWithFloorNumber') ||
+        getSettingsValue('showCitedReplies')
       ) {
         const replyElements = getReplyElements()
         for (const replyElement of replyElements) {
-          if (getSettingsValue("replyWithFloorNumber")) {
+          if (getSettingsValue('replyWithFloorNumber')) {
             replyWithFloorNumber(replyElement, true)
           }
 
-          if (getSettingsValue("showCitedReplies")) {
+          if (getSettingsValue('showCitedReplies')) {
             showCitedReplies(
               replyElement,
-              getSettingsValue("showPreviousCitedReplies"),
+              getSettingsValue('showPreviousCitedReplies'),
               true
             )
           }
@@ -319,17 +319,17 @@ async function main() {
       await resetCachedReplyElementsThenApplyAll()
       const replyElements = getCachedReplyElements()
       for (const replyElement of replyElements) {
-        if (getSettingsValue("showCitedReplies")) {
+        if (getSettingsValue('showCitedReplies')) {
           showCitedReplies(
             replyElement,
-            getSettingsValue("showPreviousCitedReplies"),
+            getSettingsValue('showPreviousCitedReplies'),
             true
           )
         }
       }
 
-      showTopReplies(replyElements, getSettingsValue("showTopReplies"), true)
-      if (getSettingsValue("fixReplyFloorNumbers")) {
+      showTopReplies(replyElements, getSettingsValue('showTopReplies'), true)
+      if (getSettingsValue('fixReplyFloorNumbers')) {
         await fixReplyFloorNumbers(replyElements)
       }
     },
@@ -337,7 +337,7 @@ async function main() {
 
   addEventListener(
     doc,
-    "readystatechange",
+    'readystatechange',
     resetCachedReplyElementsThenApplyAll
   )
 
@@ -347,7 +347,7 @@ async function main() {
     await applyAll()
   }, 500)
 
-  addEventListener(doc, "visibilitychange", async () => {
+  addEventListener(doc, 'visibilitychange', async () => {
     if (!doc.hidden) {
       await applyAll()
     }
@@ -358,7 +358,7 @@ async function main() {
     scanNodes()
   })
 
-  observer.observe($("#Main") || doc, {
+  observer.observe($('#Main') || doc, {
     childList: true,
     subtree: true,
   })
@@ -366,7 +366,7 @@ async function main() {
 
 runWhenBodyExists(async () => {
   if (doc.documentElement.dataset.v2exRep === undefined) {
-    doc.documentElement.dataset.v2exRep = ""
+    doc.documentElement.dataset.v2exRep = ''
     await main()
   }
 })

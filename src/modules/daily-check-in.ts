@@ -1,10 +1,10 @@
-import { getValue, setValue } from "browser-extension-storage"
-import { $, sleep } from "browser-extension-utils"
+import { getValue, setValue } from 'browser-extension-storage'
+import { $, sleep } from 'browser-extension-utils'
 
-import { getOnce } from "../utils"
-import { updateOnce } from "./update-once"
+import { getOnce } from '../utils'
+import { updateOnce } from './update-once'
 
-const storageKey = "dailyCheckIn"
+const storageKey = 'dailyCheckIn'
 let retryCount = 0
 
 const fetchCheckInApi = async (once: string) => {
@@ -50,19 +50,19 @@ export const dailyCheckIn = async () => {
   }
 
   const result = (await fetchCheckInApi(once)) as string
-  if (result.includes("每日登录奖励已领取")) {
-    console.info("[V2EX.REP] 签到成功")
+  if (result.includes('每日登录奖励已领取')) {
+    console.info('[V2EX.REP] 签到成功')
     await setValue(storageKey, Date.now())
     const checkInLink = $(`a[href^="/mission/daily"]`)
     if (checkInLink) {
-      const box = checkInLink.closest(".box")
+      const box = checkInLink.closest('.box')
       if (box) {
         box.nextElementSibling?.remove()
         box.remove()
       }
     }
   } else {
-    console.error("[V2EX.REP] 签到失败")
+    console.error('[V2EX.REP] 签到失败')
   }
 
   await updateOnce()

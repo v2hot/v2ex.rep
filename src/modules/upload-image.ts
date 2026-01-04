@@ -14,28 +14,28 @@ import {
   runOnce,
   setAttribute,
   win as window,
-} from "browser-extension-utils"
+} from 'browser-extension-utils'
 
 import {
   getReplyInputElement,
   insertTextToReplyInput,
   replaceReplyInputText,
-} from "../utils"
+} from '../utils'
 
 // 查看已注册的应用：https://imgur.com/account/settings/apps
 const imgurClientIdPool = [
   // 以下 Client ID 来自「V2EX Polish」
-  "3107b9ef8b316f3",
+  '3107b9ef8b316f3',
 
   // 以下 Client ID 来自「V2EX Plus」
-  "442b04f26eefc8a",
-  "59cfebe717c09e4",
-  "60605aad4a62882",
-  "6c65ab1d3f5452a",
-  "83e123737849aa9",
-  "9311f6be1c10160",
-  "c4a4a563f698595",
-  "81be04b9e4a08ce",
+  '442b04f26eefc8a',
+  '59cfebe717c09e4',
+  '60605aad4a62882',
+  '6c65ab1d3f5452a',
+  '83e123737849aa9',
+  '9311f6be1c10160',
+  'c4a4a563f698595',
+  '81be04b9e4a08ce',
 ] as const satisfies readonly string[]
 
 type ImgurResponse = {
@@ -57,7 +57,7 @@ type UploadingImageDetail = {
 
 async function uploadImageToImgur(file: File): Promise<string> {
   const formData = new FormData()
-  formData.append("image", file)
+  formData.append('image', file)
 
   // 随机获取一个 Imgur Client ID。
   // Shuffle Client-ID list to ensure a different ID on each retry
@@ -73,8 +73,8 @@ async function uploadImageToImgur(file: File): Promise<string> {
     try {
       // 使用详情参考 Imgur API 文档：https://apidocs.imgur.com/
       // eslint-disable-next-line no-await-in-loop
-      const response = await fetch("https://api.imgur.com/3/upload", {
-        method: "POST",
+      const response = await fetch('https://api.imgur.com/3/upload', {
+        method: 'POST',
         headers: { Authorization: `Client-ID ${clientId}` },
         body: formData,
       })
@@ -89,39 +89,39 @@ async function uploadImageToImgur(file: File): Promise<string> {
         }
       }
 
-      lastError = new Error("上传失败")
+      lastError = new Error('上传失败')
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error))
     }
   }
 
-  throw lastError || new Error("上传失败")
+  throw lastError || new Error('上传失败')
 }
 
 const handleUploadImage = (file: File) => {
   const detail: UploadingImageDetail = { file }
-  window.dispatchEvent(new CustomEvent("uploadImageStart", { detail }))
+  window.dispatchEvent(new CustomEvent('uploadImageStart', { detail }))
   uploadImageToImgur(file)
     // eslint-disable-next-line promise/prefer-await-to-then
     .then((imgLink) => {
       detail.imgLink = imgLink
-      window.dispatchEvent(new CustomEvent("uploadImageSuccess", { detail }))
+      window.dispatchEvent(new CustomEvent('uploadImageSuccess', { detail }))
     })
     // eslint-disable-next-line promise/prefer-await-to-then
     .catch(() => {
-      window.dispatchEvent(new CustomEvent("uploadImageFailed", { detail }))
+      window.dispatchEvent(new CustomEvent('uploadImageFailed', { detail }))
     })
 }
 
 const handleClickUploadImage = () => {
-  const imgInput = document.createElement("input")
+  const imgInput = document.createElement('input')
 
-  imgInput.style.display = "none"
-  imgInput.type = "file"
-  imgInput.accept = "image/*"
+  imgInput.style.display = 'none'
+  imgInput.type = 'file'
+  imgInput.accept = 'image/*'
   imgInput.multiple = true
 
-  addEventListener(imgInput, "change", () => {
+  addEventListener(imgInput, 'change', () => {
     const selectedFiles = imgInput.files
 
     if (selectedFiles) {
@@ -140,33 +140,33 @@ const init = () => {
     return
   }
 
-  const appendPosition = $("#reply-box > div > div")
+  const appendPosition = $('#reply-box > div > div')
   if (!appendPosition) {
     return
   }
 
   setAttribute(
     replyTextArea,
-    "placeholder",
-    "您可以在回复框内直接粘贴图片或拖拽图片文件至回复框内上传"
+    'placeholder',
+    '您可以在回复框内直接粘贴图片或拖拽图片文件至回复框内上传'
   )
 
-  const uploadTip = "+ 插入图片"
-  const placeholder = "[上传图片中...]"
+  const uploadTip = '+ 插入图片'
+  const placeholder = '[上传图片中...]'
 
-  addElement(appendPosition, "span", {
-    class: "snow",
-    textContent: " · ",
+  addElement(appendPosition, 'span', {
+    class: 'snow',
+    textContent: ' · ',
   })
 
-  const uploadButton = createElement("a", {
-    class: "vr_upload_image",
+  const uploadButton = createElement('a', {
+    class: 'vr_upload_image',
     textContent: uploadTip,
   })
   appendPosition.append(uploadButton)
 
-  addEventListener(uploadButton, "click", () => {
-    if (!hasClass(uploadButton, "vr_button_disabled")) {
+  addEventListener(uploadButton, 'click', () => {
+    if (!hasClass(uploadButton, 'vr_button_disabled')) {
       handleClickUploadImage()
     }
   })
@@ -174,14 +174,14 @@ const init = () => {
   // 粘贴图片并上传的功能。
   addEventListener(
     doc,
-    "paste",
+    'paste',
     (event) => {
       if (!(event instanceof ClipboardEvent)) {
         return
       }
 
       const replyTextArea = getReplyInputElement()
-      if (!replyTextArea?.matches(":focus")) {
+      if (!replyTextArea?.matches(':focus')) {
         return
       }
 
@@ -193,7 +193,7 @@ const init = () => {
 
       // 查找属于图像类型的数据项。
       const imageItems = Array.from(items).filter((item) =>
-        item.type.includes("image")
+        item.type.includes('image')
       )
 
       if (imageItems.length > 0) {
@@ -213,7 +213,7 @@ const init = () => {
   // 拖拽图片上传文件
   addEventListener(
     replyTextArea,
-    "drop",
+    'drop',
     (event) => {
       if (!(event instanceof DragEvent)) {
         return
@@ -222,7 +222,7 @@ const init = () => {
       const files = event.dataTransfer?.files
       if (files?.length) {
         for (const file of files) {
-          if (file.type.includes("image")) {
+          if (file.type.includes('image')) {
             event.preventDefault()
             event.stopImmediatePropagation()
             handleUploadImage(file)
@@ -242,7 +242,7 @@ const init = () => {
       // addClass(uploadButton, "vr_button_disabled")
       // uploadButton.textContent = "正在上传图片..."
       const detail: UploadingImageDetail = event.detail as UploadingImageDetail
-      const fileName = detail.file.name || "noname"
+      const fileName = detail.file.name || 'noname'
       detail.placeholder = placeholder.replace(/]/, ` (${fileName})]`)
 
       const replyTextArea = getReplyInputElement()
@@ -261,11 +261,11 @@ const init = () => {
       }
 
       const detail: UploadingImageDetail = event.detail as UploadingImageDetail
-      removeClass(uploadButton, "vr_button_disabled")
+      removeClass(uploadButton, 'vr_button_disabled')
       uploadButton.textContent = uploadTip
       replaceReplyInputText(
         detail.placeholder || placeholder,
-        detail.imgLink! || "",
+        detail.imgLink! || '',
         true
       )
     },
@@ -275,12 +275,12 @@ const init = () => {
       }
 
       const detail: UploadingImageDetail = event.detail as UploadingImageDetail
-      removeClass(uploadButton, "vr_button_disabled")
+      removeClass(uploadButton, 'vr_button_disabled')
       uploadButton.textContent = uploadTip
-      replaceReplyInputText(detail.placeholder || placeholder, "")
+      replaceReplyInputText(detail.placeholder || placeholder, '')
 
       // eslint-disable-next-line no-alert
-      alert("[V2EX.REP] ❌ 上传图片失败，请打开控制台查看原因")
+      alert('[V2EX.REP] ❌ 上传图片失败，请打开控制台查看原因')
     },
   })
 }
@@ -292,5 +292,5 @@ export const uploadImage = () => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  runOnce("uploadImage:init", init)
+  runOnce('uploadImage:init', init)
 }

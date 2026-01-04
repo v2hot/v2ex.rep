@@ -3,9 +3,9 @@ import {
   actionHref,
   getAttribute,
   setAttribute,
-} from "browser-extension-utils"
+} from 'browser-extension-utils'
 
-import { getFloorNumber } from "../utils"
+import { getFloorNumber } from '../utils'
 
 export const replyWithFloorNumber = (
   replyElement: HTMLElement,
@@ -13,10 +13,10 @@ export const replyWithFloorNumber = (
 ) => {
   const replyButton = $('a[onclick^="replyOne"]', replyElement)
   if (replyButton) {
-    setAttribute(replyButton, "href", actionHref)
+    setAttribute(replyButton, 'href', actionHref)
 
-    const onclick = getAttribute(replyButton, "onclick") || ""
-    if (onclick.includes("#") && !forceUpdate) {
+    const onclick = getAttribute(replyButton, 'onclick') || ''
+    if (onclick.includes('#') && !forceUpdate) {
       return
     }
 
@@ -24,7 +24,7 @@ export const replyWithFloorNumber = (
     if (number) {
       setAttribute(
         replyButton,
-        "onclick",
+        'onclick',
         onclick.replace(
           /replyOne\('(\w+)(?: .*)?'\)/,
           `replyOne('$1 #${number}')`

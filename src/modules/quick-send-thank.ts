@@ -5,28 +5,28 @@ import {
   getAttribute,
   hasClass,
   setAttribute,
-} from "browser-extension-utils"
+} from 'browser-extension-utils'
 
 export const quickSendThank = (replyElement: HTMLElement) => {
   const thankButton = $('a[onclick*="thankReply"]', replyElement)
   if (thankButton) {
-    const replyId = replyElement.id.replace("r_", "")
-    const onclick = getAttribute(thankButton, "onclick")
-    if (!onclick.includes("confirm")) {
+    const replyId = replyElement.id.replace('r_', '')
+    const onclick = getAttribute(thankButton, 'onclick')
+    if (!onclick.includes('confirm')) {
       return
     }
 
     setAttribute(
       thankButton,
-      "onclick",
-      onclick.replace(/.*(thankReply\(.+\)).*/, "$1")
+      'onclick',
+      onclick.replace(/.*(thankReply\(.+\)).*/, '$1')
     )
-    setAttribute(thankButton, "href", actionHref)
+    setAttribute(thankButton, 'href', actionHref)
 
     /* fix v2ex polish start */
-    if (hasClass(thankButton.parentElement, "v2p-controls")) {
-      const div = createElement("div", {
-        id: "thank_area_" + replyId,
+    if (hasClass(thankButton.parentElement, 'v2p-controls')) {
+      const div = createElement('div', {
+        id: 'thank_area_' + replyId,
       })
       thankButton.after(div)
 
