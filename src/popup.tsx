@@ -28,11 +28,15 @@ function IndexPopup() {
       style={{
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
         padding: 16,
         width: "300px",
       }}>
       <h1>V2EX.REP</h1>
-      <button onClick={openSettings} style={{ marginTop: 8, marginBottom: 20 }}>
+      <button
+        onClick={openSettings}
+        style={{ marginTop: 8, marginBottom: 20, width: "100%" }}>
         设置
       </button>
       <footer>
