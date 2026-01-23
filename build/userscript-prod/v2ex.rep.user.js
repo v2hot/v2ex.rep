@@ -4,7 +4,7 @@
 // @namespace            https://github.com/v2hot/v2ex.rep
 // @homepageURL          https://github.com/v2hot/v2ex.rep#readme
 // @supportURL           https://github.com/v2hot/v2ex.rep/issues
-// @version              1.7.0
+// @version              1.7.1
 // @description          专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @description:zh-CN    专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @icon                 https://www.v2ex.com/favicon.ico
@@ -1954,7 +1954,18 @@
   }
   async function fetchUnreadCount() {
     try {
-      const res = await fetch("/t")
+      const urls = [
+        "/t",
+        "/t/mentions",
+        "/t/home",
+        "/go/status",
+        "/go/guide",
+        "/go/v2ex",
+        "/go/random",
+        "/go/ideas",
+      ]
+      const url = urls[Math.floor(Math.random() * urls.length)]
+      const res = await fetch(url)
       const text = await res.text()
       const doc2 = new DOMParser().parseFromString(text, "text/html")
       const link = doc2.querySelector('#Rightbar a[href="/notifications"]')
@@ -2074,12 +2085,44 @@
     }
   }
   function updateUI(count) {
+    var _a, _b
     currentUnreadCount = count
     const element = document.querySelector('#Rightbar a[href="/notifications"]')
     if (element) {
-      const newText = "".concat(count, " \u672A\u8BFB\u63D0\u9192")
-      if (element.textContent !== newText) {
-        element.textContent = newText
+      const text = "".concat(count, " \u672A\u8BFB\u63D0\u9192")
+      const parent = element.parentElement
+      const isNotificationStyle =
+        (parent == null ? void 0 : parent.tagName) === "STRONG" &&
+        ((_a = parent.parentElement) == null
+          ? void 0
+          : _a.querySelector(".orange-dot"))
+      if (count > 0) {
+        if (isNotificationStyle) {
+          if (element.textContent !== text) {
+            element.textContent = text
+          }
+        } else {
+          const wrapper = document.createElement("div")
+          wrapper.innerHTML = '<div class="orange-dot"></div><strong></strong>'
+          const strong = wrapper.querySelector("strong")
+          element.textContent = text
+          element.className = ""
+          if (parent) {
+            element.before(wrapper)
+            strong.append(element)
+          }
+        }
+      } else if (isNotificationStyle) {
+        const wrapper =
+          (_b = element.parentElement) == null ? void 0 : _b.parentElement
+        if (wrapper) {
+          element.textContent = text
+          element.className = "fade"
+          wrapper.replaceWith(element)
+        }
+      } else if (element.textContent !== text) {
+        element.textContent = text
+        element.className = "fade"
       }
     }
     if (getSettingsValue("checkUnreadNotificationsFavicon")) {
@@ -2128,6 +2171,9 @@
   function initCheckNotifications() {
     if (initialized) return
     initialized = true
+    if (location.pathname === "/notifications") {
+      void setValue2(KEY_UNREAD_COUNT, 0)
+    }
     startUtagsObserver()
     void addValueChangeListener2(KEY_UNREAD_COUNT, (_key, _old, newValue) => {
       if (typeof newValue === "number") {

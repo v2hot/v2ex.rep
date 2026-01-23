@@ -130,6 +130,10 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- 1.7.1
+  - Automatically clear unread count when visiting the notifications page
+  - Optimize Favicon Badge style
+  - Optimize unread notification checking logic
 - 1.7.0
   - Add checking for unread notifications
   - Show unread count in Page Title, Favicon Badge, and UTags Shortcuts

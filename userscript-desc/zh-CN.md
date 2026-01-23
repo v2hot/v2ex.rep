@@ -130,6 +130,10 @@
 
 ## Release Notes
 
+- 1.7.1
+  - 访问提醒页面时自动清除未读计数
+  - 优化 Favicon Badge 样式
+  - 优化未读提醒检查逻辑
 - 1.7.0
   - 新增定时检查未读提醒功能
   - 网页标题、Favicon Badge、UTags Shortcuts 显示未读提醒个数

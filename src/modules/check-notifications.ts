@@ -80,7 +80,18 @@ function startUtagsObserver(): void {
 
 async function fetchUnreadCount(): Promise<number | undefined> {
   try {
-    const res = await fetch('/t')
+    const urls = [
+      '/t',
+      '/t/mentions',
+      '/t/home',
+      '/go/status',
+      '/go/guide',
+      '/go/v2ex',
+      '/go/random',
+      '/go/ideas',
+    ]
+    const url = urls[Math.floor(Math.random() * urls.length)]
+    const res = await fetch(url)
     const text = await res.text()
     const doc = new DOMParser().parseFromString(text, 'text/html')
     const link = doc.querySelector('#Rightbar a[href="/notifications"]')
@@ -236,9 +247,42 @@ function updateUI(count: number): void {
 
   const element = document.querySelector('#Rightbar a[href="/notifications"]')
   if (element) {
-    const newText = `${count} 未读提醒`
-    if (element.textContent !== newText) {
-      element.textContent = newText
+    const text = `${count} 未读提醒`
+    const parent = element.parentElement
+    const isNotificationStyle =
+      parent?.tagName === 'STRONG' &&
+      parent.parentElement?.querySelector('.orange-dot')
+
+    if (count > 0) {
+      if (isNotificationStyle) {
+        if (element.textContent !== text) {
+          element.textContent = text
+        }
+      } else {
+        // Change to notification structure
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = `<div class="orange-dot"></div><strong></strong>`
+        const strong = wrapper.querySelector('strong')!
+
+        element.textContent = text
+        element.className = ''
+
+        if (parent) {
+          element.before(wrapper)
+          strong.append(element)
+        }
+      }
+    } else if (isNotificationStyle) {
+      // Revert to simple style
+      const wrapper = element.parentElement?.parentElement
+      if (wrapper) {
+        element.textContent = text
+        element.className = 'fade'
+        wrapper.replaceWith(element)
+      }
+    } else if (element.textContent !== text) {
+      element.textContent = text
+      element.className = 'fade'
     }
   }
 
@@ -299,6 +343,10 @@ export async function check(force = false): Promise<void> {
 export function initCheckNotifications(): void {
   if (initialized) return
   initialized = true
+
+  if (location.pathname === '/notifications') {
+    void setValue(KEY_UNREAD_COUNT, 0)
+  }
 
   startUtagsObserver()
 
