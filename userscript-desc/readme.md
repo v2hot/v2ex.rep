@@ -22,6 +22,7 @@
 - ✅ 主题内容底部固定显示按钮栏
 - ✅ 双击空白处快速导，在主题区，回复区，回复框之间快速跳转
 - ✅ 更换 favicon 图标为 GitHub 图标或用户头像
+- ✅ 定时检查未读提醒，网页标题、Favicon Badge 显示提醒个数
 
 > - ⚠️ 兼容 V2EX Plus, V2EX Polish 等浏览器扩展/脚本。兼容手机网页版 V2EX。
 > - ⚠️ 暂时不兼容 V2EX - 超级增强脚本，以后会兼容。
@@ -61,6 +62,14 @@
 - 更换 favicon 图标为 GitHub 图标或用户头像
 
 ![screenshots](https://wsrv.nl/?url=raw.githubusercontent.com/v2hot/v2ex.rep/main/assets/v2ex.rep-screenshots-09.png)
+
+- 定时检查未读提醒，网页标题、Favicon Badge 显示提醒个数
+
+![screenshots](https://wsrv.nl/?url=raw.githubusercontent.com/v2hot/v2ex.rep/main/assets/v2ex.rep-screenshots-10.png)
+
+- 支持 UTags Shortcuts 显示提醒个数
+
+![screenshots](https://wsrv.nl/?url=raw.githubusercontent.com/v2hot/v2ex.rep/main/assets/v2ex.rep-screenshots-11.png)
 
 ## Other
 
@@ -121,6 +130,9 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- 1.7.0
+  - Add checking for unread notifications
+  - Show unread count in Page Title, Favicon Badge, and UTags Shortcuts
 - 1.6.3
   - 兼容 utags-shortcuts 在 iframe 模式下运行
 - 1.6.2

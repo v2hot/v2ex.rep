@@ -286,7 +286,7 @@ const onMouseOver = (event: Event) => {
       // console.log(memberId)
       showRelatedReplies(memberLink, memberId)
     }
-  }, 700)
+  }, 700) as unknown as number
 }
 
 const onMouseOut = () => {

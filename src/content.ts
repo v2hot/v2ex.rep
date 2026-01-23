@@ -20,6 +20,10 @@ import { addLinkToAvatars } from './modules/add-link-to-avatars'
 import { addlinkToCitedFloorNumbers } from './modules/add-link-to-cited-floor-numbers'
 import { alwaysShowHideButton } from './modules/always-show-hide-button'
 import { alwaysShowThankButton } from './modules/always-show-thank-button'
+import {
+  initCheckNotifications,
+  runCheckNotifications,
+} from './modules/check-notifications'
 import { dailyCheckIn } from './modules/daily-check-in'
 import { filterRepliesByUser } from './modules/filter-repies-by-user'
 import { fixReplyFloorNumbers } from './modules/fix-reply-floor-numbers'
@@ -161,6 +165,22 @@ const settingsTable = {
       用户头像: 'avatar',
     },
   },
+  checkUnreadNotifications: {
+    title: '定时检查未读提醒',
+    defaultValue: true,
+  },
+  checkUnreadNotificationsTitle: {
+    title: '网页标题显示提醒个数',
+    defaultValue: true,
+  },
+  checkUnreadNotificationsFavicon: {
+    title: 'Favicon Badge 显示提醒个数',
+    defaultValue: true,
+  },
+  checkUnreadNotificationsUtags: {
+    title: 'UTags Shortcuts 显示提醒个数',
+    defaultValue: true,
+  },
 }
 
 let fixedReplyFloorNumbers = false
@@ -180,6 +200,8 @@ async function applyAll() {
   }
 
   replaceFavicon(getSettingsValue('replaceFavicon'))
+
+  runCheckNotifications()
 
   if (domReady && mainContentReady && /\/t\/\d+/.test(location.href)) {
     if (doc.documentElement && doc.documentElement.dataset) {
@@ -287,6 +309,8 @@ async function main() {
 
   addStyle(styleText)
 
+  initCheckNotifications()
+
   const resetCachedReplyElementsThenApplyAll = async () => {
     resetCachedReplyElements()
     await applyAll()
@@ -358,7 +382,7 @@ async function main() {
     scanNodes()
   })
 
-  observer.observe($('#Main') || doc, {
+  observer.observe($('#Main') || doc.body || doc, {
     childList: true,
     subtree: true,
   })
