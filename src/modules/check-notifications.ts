@@ -81,14 +81,24 @@ function startUtagsObserver(): void {
 async function fetchUnreadCount(): Promise<number | undefined> {
   try {
     const urls = [
-      '/t',
+      // +1~3
+      // '/t',
+      // +1 or +2
       '/t/mentions',
-      '/t/home',
-      '/go/status',
-      '/go/guide',
-      '/go/v2ex',
-      '/go/random',
-      '/go/ideas',
+      // +1~3
+      // '/t/home',
+      // /go/xx + 3 point
+      // '/go/status',
+      // '/go/guide',
+      // '/go/v2ex',
+      // '/go/random',
+      // '/go/ideas',
+      // +2 point
+      '/about',
+      // +2
+      '/pro/about',
+      // +1 point
+      '/solana',
     ]
     const url = urls[Math.floor(Math.random() * urls.length)]
     const res = await fetch(url)
