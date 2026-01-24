@@ -7,7 +7,6 @@ import {
 
 import { debounce } from '../utils/index'
 
-const CHECK_INTERVAL = 60 * 1000
 const LOCK_TIMEOUT = 20 * 1000
 const KEY_LOCK = 'check_lock'
 const KEY_LAST_CHECK = 'last_check'
@@ -327,8 +326,10 @@ export async function check(force = false): Promise<void> {
 
   const now = Date.now()
   if (!force) {
+    const interval =
+      Number(getSettingsValue('checkUnreadNotificationsInterval')) * 60 * 1000
     const lastCheck = (await getValue<number>(KEY_LAST_CHECK, 0))!
-    if (now - lastCheck < CHECK_INTERVAL) return
+    if (now - lastCheck < interval) return
   }
 
   const lockTime = (await getValue<number>(KEY_LOCK, 0))!
@@ -356,6 +357,18 @@ export function initCheckNotifications(): void {
 
   if (location.pathname === '/notifications') {
     void setValue(KEY_UNREAD_COUNT, 0)
+    void setValue(KEY_LAST_CHECK, Date.now())
+  } else {
+    // Check if current page has unread count
+    const link = document.querySelector('#Rightbar a[href="/notifications"]')
+    if (link && link.textContent) {
+      const match = /(\d+)\s+未读提醒/.exec(link.textContent)
+      if (match) {
+        const count = Number.parseInt(match[1], 10)
+        void setValue(KEY_UNREAD_COUNT, count)
+        void setValue(KEY_LAST_CHECK, Date.now())
+      }
+    }
   }
 
   startUtagsObserver()

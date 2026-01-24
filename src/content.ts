@@ -169,6 +169,20 @@ const settingsTable = {
     title: '定时检查未读提醒',
     defaultValue: true,
   },
+  checkUnreadNotificationsInterval: {
+    title: '定时检查时间间隔',
+    type: 'select',
+    defaultValue: '5',
+    options: {
+      '1 分钟': '1',
+      '2 分钟': '2',
+      '3 分钟': '3',
+      '5 分钟': '5',
+      '8 分钟': '8',
+      '13 分钟': '13',
+      '21 分钟': '21',
+    },
+  },
   checkUnreadNotificationsTitle: {
     title: '网页标题显示提醒个数',
     defaultValue: true,
@@ -201,7 +215,10 @@ async function applyAll() {
 
   replaceFavicon(getSettingsValue('replaceFavicon'))
 
-  runCheckNotifications()
+  // Don't need to run on settings change or dom change
+  // if (domCompleted && mainContentReady) {
+  //   runCheckNotifications()
+  // }
 
   if (domReady && mainContentReady && /\/t\/\d+/.test(location.href)) {
     if (doc.documentElement && doc.documentElement.dataset) {
@@ -309,7 +326,11 @@ async function main() {
 
   addStyle(styleText)
 
-  initCheckNotifications()
+  if (doc.readyState === 'loading') {
+    addEventListener(doc, 'DOMContentLoaded', initCheckNotifications)
+  } else {
+    initCheckNotifications()
+  }
 
   const resetCachedReplyElementsThenApplyAll = async () => {
     resetCachedReplyElements()

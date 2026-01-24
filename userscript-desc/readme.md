@@ -130,6 +130,9 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- 1.7.3
+  - Add option to customize the check interval for unread notifications
+  - Optimize the timing of unread notification checks
 - 1.7.1
   - Automatically clear unread count when visiting the notifications page
   - Optimize Favicon Badge style
