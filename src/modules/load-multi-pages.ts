@@ -81,6 +81,9 @@ const gotoPage = (page: string | number | undefined, event: Event) => {
     firstReply.scrollIntoView({ block: 'start' })
     event.preventDefault()
     event.stopImmediatePropagation()
+  } else {
+    // Not loaded yet
+    location.reload()
   }
 
   for (const pagingElement of $$('.page_current,.page_normal')) {
@@ -258,11 +261,34 @@ export const loadMultiPages = async () => {
       replyElement.dataset.page = String(currentPage)
     }
 
-    for (let i = 1; i <= totalPage; i++) {
-      if (i === currentPage) {
-        continue
+    const maxPreloadPageCount = parseInt10(
+      getSettingsValue('maxPreloadPageCount')
+    )
+
+    let pagesToLoad: number[] = []
+
+    if (maxPreloadPageCount === 0) {
+      for (let i = 1; i <= totalPage; i++) {
+        if (i !== currentPage) {
+          pagesToLoad.push(i)
+        }
+      }
+    } else {
+      const nextPages: number[] = []
+      for (let i = currentPage + 1; i <= totalPage; i++) {
+        nextPages.push(i)
       }
 
+      const prevPages: number[] = []
+      for (let i = currentPage - 1; i >= 1; i--) {
+        prevPages.push(i)
+      }
+
+      pagesToLoad = [...nextPages, ...prevPages].slice(0, maxPreloadPageCount)
+      pagesToLoad.sort((a, b) => a - b)
+    }
+
+    for (const i of pagesToLoad) {
       console.info('[V2EX.REP] Fetching page', i)
       // eslint-disable-next-line no-await-in-loop
       const html = (await getTopicPage(topicId, i)) as string

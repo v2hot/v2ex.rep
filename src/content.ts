@@ -114,6 +114,19 @@ const settingsTable = {
     title: '预加载所有分页',
     defaultValue: true,
   },
+  maxPreloadPageCount: {
+    title: '最多预加载分页个数',
+    type: 'select',
+    defaultValue: '10',
+    options: {
+      所有: '0',
+      '3': '3',
+      '5': '5',
+      '10': '10',
+      '15': '15',
+      '20': '20',
+    },
+  },
   uploadImage: {
     title: '回复时上传图片',
     defaultValue: true,

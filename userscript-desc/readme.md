@@ -130,6 +130,8 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- 1.7.4
+  - Add option to limit the max number of preloaded pages
 - 1.7.3
   - Add option to customize the check interval for unread notifications
   - Optimize the timing of unread notification checks
