@@ -10,20 +10,28 @@ import {
 } from 'browser-extension-utils'
 
 const restoreImgSrc = throttle(() => {
-  for (const img of $$('img[data-src]')) {
-    setAttribute(img, 'src', getAttribute(img, 'data-src'))
+  for (const img of $$('img[data-src]') as HTMLImageElement[]) {
+    const dataSrc = getAttribute(img, 'data-src')
+    if (dataSrc) {
+      setAttribute(img, 'src', dataSrc)
+    }
+
     delete img.dataset.src
   }
 }, 500)
 
 export const lazyLoadAvatars = (replyElement: HTMLElement) => {
-  const avatar = $('img.avatar', replyElement)
+  const avatar = $('img.avatar', replyElement) as HTMLImageElement | undefined
   if (avatar) {
     if (getAttribute(avatar, 'loading') === 'lazy' || avatar.complete) {
       return
     }
 
     const src = getAttribute(avatar, 'src')
+    if (!src) {
+      return
+    }
+
     setAttribute(avatar, 'loading', 'lazy')
     setAttribute(avatar, 'data-src', src)
     setAttribute(

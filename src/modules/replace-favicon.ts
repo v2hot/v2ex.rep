@@ -5,6 +5,8 @@ import {
   setAttributes,
 } from 'browser-extension-utils'
 
+const avatarsWithFaviconHandler = new WeakSet<HTMLImageElement>()
+
 function setFavition(url: string, type?: string) {
   const element = $('link[rel="shortcut icon"]')
   if (element) {
@@ -40,8 +42,8 @@ function replaceToAvatar() {
   ) as HTMLImageElement
   if (avatar) {
     setFavition(avatar.src)
-    if (!avatar.setFaviconHandler) {
-      avatar.setFaviconHandler = true
+    if (!avatarsWithFaviconHandler.has(avatar)) {
+      avatarsWithFaviconHandler.add(avatar)
       addEventListener(avatar, 'load', () => {
         setFavition(avatar.src)
       })

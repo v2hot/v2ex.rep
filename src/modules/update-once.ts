@@ -1,5 +1,7 @@
 import { $, $$, getAttribute, setAttribute } from 'browser-extension-utils'
 
+declare const unsafeWindow: (Window & typeof globalThis) | undefined
+
 const fetchOnce = async () => {
   const url = `${location.protocol}//${location.host}/poll_once`
   const response = await fetch(url)
@@ -16,15 +18,23 @@ const fetchOnce = async () => {
 export const updateOnce = async () => {
   const once = await fetchOnce()
   if (once) {
-    globalThis.once = once
-    if ($('#once')) {
-      $('#once').value = once
+    ;(globalThis as any).once = once
+    // eslint-disable-next-line unicorn/no-typeof-undefined
+    if (typeof unsafeWindow !== 'undefined') {
+      ;(unsafeWindow as any).once = once
+    }
+
+    const onceInput = $('#once') as HTMLInputElement | undefined
+    if (onceInput) {
+      onceInput.value = once
     }
 
     const links = $$(`a[href*="once="]`)
     for (const link of links) {
       const href = getAttribute(link, 'href')
-      setAttribute(link, 'href', href.replace(/once=\d+/, `once=${once}`))
+      if (href) {
+        setAttribute(link, 'href', href.replace(/once=\d+/, `once=${once}`))
+      }
     }
   }
 }

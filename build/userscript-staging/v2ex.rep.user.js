@@ -4,7 +4,7 @@
 // @namespace            https://github.com/v2hot/v2ex.rep
 // @homepageURL          https://github.com/v2hot/v2ex.rep#readme
 // @supportURL           https://github.com/v2hot/v2ex.rep/issues
-// @version              1.7.4
+// @version              1.7.5
 // @description          专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @description:zh-CN    专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @icon                 https://www.v2ex.com/favicon.ico
@@ -287,13 +287,20 @@
       element.removeEventListener(type, listener, options)
     }
   }
-  var getAttribute = (element, name) =>
-    element && element.getAttribute
-      ? element.getAttribute(name) || void 0
+  var getAttribute = (element, name) => {
+    var _a
+    return element && element.getAttribute
+      ? (_a = element.getAttribute(name)) != null
+        ? _a
+        : void 0
       : void 0
+  }
   var setAttribute = (element, name, value) => {
     if (element && element.setAttribute) {
-      element.setAttribute(name, value)
+      const orgValue = getAttribute(element, name)
+      if (orgValue !== value) {
+        element.setAttribute(name, value)
+      }
     }
   }
   var addAttribute = (element, name, value) => {
@@ -343,7 +350,7 @@
   var tt = globalThis.trustedTypes
   var escapeHTMLPolicy =
     tt !== void 0 && typeof tt.createPolicy === "function"
-      ? tt.createPolicy("beuEscapePolicy", {
+      ? tt.createPolicy("dompurify", {
           createHTML: (string) => string,
         })
       : void 0
@@ -1107,7 +1114,7 @@
     }
     removeEventListener(doc, "click", onDocumentClick, true)
     removeEventListener(doc, "keydown", onDocumentKeyDown, true)
-    removeEventListener(win, "beforeShowSettings", onBeforeShowSettings, true)
+    removeEventListener(doc, "beforeShowSettings", onBeforeShowSettings, true)
   }
   function hideSettings() {
     var _a
@@ -1341,7 +1348,7 @@
                     if (textArea) {
                       await saveSettingsValue(key, textArea.value.trim())
                     }
-                  }, 100)
+                  }, 2e3)
                 },
               })
               break
@@ -1471,8 +1478,8 @@
     }
     closeModal()
     const event = new CustomEvent("beforeShowSettings")
-    win.dispatchEvent(event)
-    addEventListener(win, "beforeShowSettings", onBeforeShowSettings, true)
+    doc.dispatchEvent(event)
+    addEventListener(doc, "beforeShowSettings", onBeforeShowSettings, true)
     createSettingsElement()
     await updateOptions()
     addEventListener(doc, "click", onDocumentClick, true)
@@ -1556,7 +1563,8 @@
     const memberLink = $('a[href^="/member/"]', replyElement)
     if (
       memberLink &&
-      ((_a = memberLink.firstChild) == null ? void 0 : _a.tagName) === "IMG"
+      ((_a = memberLink.firstElementChild) == null ? void 0 : _a.tagName) ===
+        "IMG"
     ) {
       return
     }
@@ -1566,7 +1574,7 @@
         return
       }
       const memberLink2 = createElement("a", {
-        href: getAttribute(memberLink, "href"),
+        href: getAttribute(memberLink, "href") || "",
       })
       avatar.after(memberLink2)
       memberLink2.append(avatar)
@@ -1802,6 +1810,9 @@
   }
   var addlinkToCitedFloorNumbers = (replyElement) => {
     const content = $(".reply_content", replyElement)
+    if (!content) {
+      return
+    }
     const memberLinks = $$('a[href^="/member/"]', content)
     for (const memberLink of memberLinks) {
       const previousTextNode = memberLink.previousSibling
@@ -1816,7 +1827,7 @@
         let nextTextNode = memberLink.nextSibling
         while (nextTextNode) {
           if (
-            nextTextNode.tagName === "BR" ||
+            nextTextNode.nodeName === "BR" ||
             !nextTextNode.textContent ||
             nextTextNode.textContent.trim().length === 0
           ) {
@@ -2211,17 +2222,23 @@
     const once = await fetchOnce()
     if (once) {
       globalThis.once = once
-      if ($("#once")) {
-        $("#once").value = once
+      if (typeof unsafeWindow !== "undefined") {
+        unsafeWindow.once = once
+      }
+      const onceInput = $("#once")
+      if (onceInput) {
+        onceInput.value = once
       }
       const links = $$('a[href*="once="]')
       for (const link of links) {
         const href = getAttribute(link, "href")
-        setAttribute(
-          link,
-          "href",
-          href.replace(/once=\d+/, "once=".concat(once))
-        )
+        if (href) {
+          setAttribute(
+            link,
+            "href",
+            href.replace(/once=\d+/, "once=".concat(once))
+          )
+        }
       }
     }
   }
@@ -2286,6 +2303,7 @@
   }
   var isTouchScreen1 = isTouchScreen()
   var timeoutId
+  var docBoundEvent = false
   var scrollPositionStack = []
   var showModalReplies = (replies, referElement, memberId, type) => {
     var _a
@@ -2318,17 +2336,26 @@
     const container = addElement2(main2, "div", {
       class: "related_replies_container",
     })
+    if (!container) {
+      return
+    }
     const box = addElement2(container, "div", {
       class: "box related_replies related_replies_before",
     })
     const box2 = addElement2(container, "div", {
       class: "box related_replies related_replies_after",
     })
+    if (!box || !box2) {
+      return
+    }
     box.innerHTML = ""
     box2.innerHTML = ""
     const tabs = addElement2(box, "div", {
       class: "box tabs inner",
     })
+    if (!tabs) {
+      return
+    }
     addElement2(tabs, "a", {
       class: !type || type === "all" ? "tab_current" : "tab",
       href: actionHref,
@@ -2498,24 +2525,64 @@
         : filterRepliesByPosterOrMentioned(memberId)
     showModalReplies(replies, memberLink, memberId, type)
   }
-  var onMouseOver = (event) => {
+  var scheduleShowRelatedReplies = (memberLink) => {
     if (timeoutId) {
       clearTimeout(timeoutId)
       timeoutId = void 0
     }
-    const memberLink = event.target
     timeoutId = setTimeout(() => {
+      if (!(memberLink instanceof HTMLAnchorElement)) {
+        return
+      }
       const memberId = (/member\/(\w+)/.exec(memberLink.href) || [])[1]
       if (memberId) {
         showRelatedReplies(memberLink, memberId)
       }
     }, 700)
   }
-  var onMouseOut = () => {
+  var cancelShowRelatedReplies = () => {
     if (timeoutId) {
       clearTimeout(timeoutId)
       timeoutId = void 0
     }
+  }
+  var onDocumentMouseOver = (event) => {
+    const target = event.target
+    if (!target) {
+      return
+    }
+    const memberLink = target.closest('a[href^="/member/"]')
+    if (!memberLink) {
+      return
+    }
+    scheduleShowRelatedReplies(memberLink)
+  }
+  var onDocumentMouseOut = (event) => {
+    const mouseEvent = event
+    const target = mouseEvent.target
+    if (!target) {
+      return
+    }
+    const memberLink = target.closest('a[href^="/member/"]')
+    if (!memberLink) {
+      return
+    }
+    const relatedTarget = mouseEvent.relatedTarget
+    if (relatedTarget && memberLink.contains(relatedTarget)) {
+      return
+    }
+    cancelShowRelatedReplies()
+  }
+  var onDocumentTouchStart = (event) => {
+    const target = event.target
+    if (!target) {
+      return
+    }
+    const memberLink = target.closest('a[href^="/member/"]')
+    if (!memberLink) {
+      return
+    }
+    scheduleShowRelatedReplies(memberLink)
   }
   var closeModal2 = (closeLast = false) => {
     for (const element of $$(".related_replies_container").reverse()) {
@@ -2580,38 +2647,27 @@
   }
   var filterRepliesByUser = (toogle) => {
     if (toogle) {
-      const memberLinks = $$('a[href^="/member/"]')
-      for (const memberLink of memberLinks) {
-        if (!memberLink.boundEvent) {
-          addEventListener(memberLink, "mouseover", onMouseOver, true)
-          addEventListener(memberLink, "mouseout", onMouseOut)
-          if (isTouchScreen1) {
-            addEventListener(memberLink, "touchstart", onMouseOver, true)
-          }
-          memberLink.boundEvent = true
+      if (!docBoundEvent) {
+        addEventListener(doc, "mouseover", onDocumentMouseOver, true)
+        addEventListener(doc, "mouseout", onDocumentMouseOut, true)
+        if (isTouchScreen1) {
+          addEventListener(doc, "touchstart", onDocumentTouchStart, true)
         }
-      }
-      if (!doc.boundEvent) {
         addEventListener(doc, "click", onDocumentClick2, true)
         addEventListener(doc, "keydown", onDocumentKeyDown2)
-        doc.boundEvent = true
+        docBoundEvent = true
       }
-    } else if (doc.boundEvent) {
+    } else if (docBoundEvent) {
       closeModal2()
+      removeEventListener(doc, "mouseover", onDocumentMouseOver, true)
+      removeEventListener(doc, "mouseout", onDocumentMouseOut, true)
+      if (isTouchScreen1) {
+        removeEventListener(doc, "touchstart", onDocumentTouchStart, true)
+      }
       removeEventListener(doc, "click", onDocumentClick2, true)
       removeEventListener(doc, "keydown", onDocumentKeyDown2)
-      doc.boundEvent = false
-      const memberLinks = $$('a[href^="/member/"]')
-      for (const memberLink of memberLinks) {
-        if (memberLink.boundEvent) {
-          removeEventListener(memberLink, "mouseover", onMouseOver, true)
-          removeEventListener(memberLink, "mouseout", onMouseOut)
-          if (isTouchScreen1) {
-            removeEventListener(memberLink, "touchstart", onMouseOver, true)
-          }
-          memberLink.boundEvent = false
-        }
-      }
+      docBoundEvent = false
+      cancelShowRelatedReplies()
     }
   }
   var retryCount2 = 0
@@ -2678,6 +2734,9 @@
     }
   }
   var updateReplyElements = (replies, replyElements, page = 1) => {
+    for (const replyElement of replyElements) {
+      delete replyElement.dataset.vrFound
+    }
     let floorNumberOffset = 0
     let hiddenCount = 0
     let hiddenCount2 = 0
@@ -2709,7 +2768,7 @@
         })
         hiddenCount2++
       }
-      element.found = true
+      element.dataset.vrFound = "1"
       if (hiddenCount > 0) {
         const numberElement = getFloorNumberElement(element)
         if (numberElement) {
@@ -2733,7 +2792,7 @@
     )
     if (floorNumberOffset > 0) {
       for (const element of replyElements) {
-        if (element.found) {
+        if (element.dataset.vrFound === "1") {
           continue
         }
         const id = getReplyId(element)
@@ -2842,7 +2901,10 @@
   }
   var restoreImgSrc = throttle(() => {
     for (const img of $$("img[data-src]")) {
-      setAttribute(img, "src", getAttribute(img, "data-src"))
+      const dataSrc = getAttribute(img, "data-src")
+      if (dataSrc) {
+        setAttribute(img, "src", dataSrc)
+      }
       delete img.dataset.src
     }
   }, 500)
@@ -2853,6 +2915,9 @@
         return
       }
       const src = getAttribute(avatar, "src")
+      if (!src) {
+        return
+      }
       setAttribute(avatar, "loading", "lazy")
       setAttribute(avatar, "data-src", src)
       setAttribute(
@@ -3117,7 +3182,7 @@
   var quickHideReply = (replyElement) => {
     const hideButton = $('a[onclick*="ignoreReply"]', replyElement)
     if (hideButton) {
-      const onclick = getAttribute(hideButton, "onclick")
+      const onclick = getAttribute(hideButton, "onclick") || ""
       if (!onclick.includes("confirm")) {
         return
       }
@@ -3183,7 +3248,7 @@
     const thankButton = $('a[onclick*="thankReply"]', replyElement)
     if (thankButton) {
       const replyId = replyElement.id.replace("r_", "")
-      const onclick = getAttribute(thankButton, "onclick")
+      const onclick = getAttribute(thankButton, "onclick") || ""
       if (!onclick.includes("confirm")) {
         return
       }
@@ -3235,6 +3300,7 @@
       replaceState(href)
     }
   }
+  var avatarsWithFaviconHandler = /* @__PURE__ */ new WeakSet()
   function setFavition(url, type) {
     const element = $('link[rel="shortcut icon"]')
     if (element) {
@@ -3263,8 +3329,8 @@
     const avatar = $('.header img.avatar, td[width="73"] img.avatar', main2)
     if (avatar) {
       setFavition(avatar.src)
-      if (!avatar.setFaviconHandler) {
-        avatar.setFaviconHandler = true
+      if (!avatarsWithFaviconHandler.has(avatar)) {
+        avatarsWithFaviconHandler.add(avatar)
         addEventListener(avatar, "load", () => {
           setFavition(avatar.src)
         })
@@ -3403,7 +3469,7 @@
     const element = $("#top_replies")
     if (element) {
       const sep20 = element.previousElementSibling
-      if (hasClass(sep20, "sep20")) {
+      if (sep20 && hasClass(sep20, "sep20")) {
         sep20.remove()
       }
       element.remove()
@@ -3412,7 +3478,10 @@
   var showTopReplies = (replyElements, toggle, forceUpdate = false) => {
     if (!toggle) {
       reset()
-      removeClass($("#Wrapper"), "sticky_rightbar")
+      const wrapper2 = $("#Wrapper")
+      if (wrapper2) {
+        removeClass(wrapper2, "sticky_rightbar")
+      }
       done = false
       return
     }
@@ -3421,7 +3490,10 @@
     }
     done = true
     reset()
-    addClass($("#Wrapper"), "sticky_rightbar")
+    const wrapper = $("#Wrapper")
+    if (wrapper) {
+      addClass(wrapper, "sticky_rightbar")
+    }
     const topReplies = replyElements
       .filter((reply) => {
         var _a
@@ -3438,17 +3510,19 @@
             0
           )
           if (thanked > 0) {
-            reply.thanked = thanked
+            reply.dataset.vrThanked = String(thanked)
             return true
           }
         }
         return false
       })
-      .sort((a, b) =>
-        b.thanked === a.thanked
+      .sort((a, b) => {
+        const aThanked = parseInt10(a.dataset.vrThanked, 0)
+        const bThanked = parseInt10(b.dataset.vrThanked, 0)
+        return bThanked === aThanked
           ? sortReplyElementsByFloorNumberCompareFn(a, b)
-          : b.thanked - a.thanked
-      )
+          : bThanked - aThanked
+      })
     if (topReplies.length > 0) {
       const box = createElement("div", {
         class: "box",

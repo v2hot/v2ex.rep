@@ -99,6 +99,10 @@ const updateReplyElements = (
   replyElements: HTMLElement[],
   page = 1
 ) => {
+  for (const replyElement of replyElements) {
+    delete replyElement.dataset.vrFound
+  }
+
   let floorNumberOffset = 0
   let hiddenCount = 0
   let hiddenCount2 = 0
@@ -133,7 +137,7 @@ const updateReplyElements = (
       hiddenCount2++
     }
 
-    element.found = true
+    element.dataset.vrFound = '1'
 
     if (hiddenCount > 0) {
       const numberElement = getFloorNumberElement(element)
@@ -164,7 +168,7 @@ const updateReplyElements = (
   if (floorNumberOffset > 0) {
     // 如果 API 返回的数据不是最新，实际页面的回复数会比 API 里的多。更新多的部分
     for (const element of replyElements) {
-      if (element.found) {
+      if (element.dataset.vrFound === '1') {
         continue
       }
 

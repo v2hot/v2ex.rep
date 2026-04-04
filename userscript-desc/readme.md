@@ -130,6 +130,9 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- 1.7.5
+  - 升级依赖到最新版本（xo 除外）
+  - 优化“查看用户在当前主题下的所有回复”事件绑定方式（支持复制节点场景）
 - 1.7.4
   - Add option to limit the max number of preloaded pages
 - 1.7.3

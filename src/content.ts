@@ -45,10 +45,14 @@ import {
   resetCachedReplyElements,
 } from './utils'
 
+declare const process: {
+  env: {
+    PLASMO_TARGET: string
+  }
+}
+
 if (
-  // eslint-disable-next-line n/prefer-global/process
   process.env.PLASMO_TARGET === 'chrome-mv3' ||
-  // eslint-disable-next-line n/prefer-global/process
   process.env.PLASMO_TARGET === 'firefox-mv3'
 ) {
   // Receive popup trigger to show settings in the content context

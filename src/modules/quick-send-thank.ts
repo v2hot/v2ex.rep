@@ -11,7 +11,7 @@ export const quickSendThank = (replyElement: HTMLElement) => {
   const thankButton = $('a[onclick*="thankReply"]', replyElement)
   if (thankButton) {
     const replyId = replyElement.id.replace('r_', '')
-    const onclick = getAttribute(thankButton, 'onclick')
+    const onclick = getAttribute(thankButton, 'onclick') || ''
     if (!onclick.includes('confirm')) {
       return
     }

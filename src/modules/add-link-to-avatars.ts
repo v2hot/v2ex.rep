@@ -2,7 +2,7 @@ import { $, createElement, getAttribute } from 'browser-extension-utils'
 
 export const addLinkToAvatars = (replyElement: HTMLElement) => {
   const memberLink = $('a[href^="/member/"]', replyElement)
-  if (memberLink && memberLink.firstChild?.tagName === 'IMG') {
+  if (memberLink && memberLink.firstElementChild?.tagName === 'IMG') {
     return
   }
 
@@ -13,7 +13,7 @@ export const addLinkToAvatars = (replyElement: HTMLElement) => {
     }
 
     const memberLink2 = createElement('a', {
-      href: getAttribute(memberLink, 'href'),
+      href: getAttribute(memberLink, 'href') || '',
     })
     avatar.after(memberLink2)
     memberLink2.append(avatar)

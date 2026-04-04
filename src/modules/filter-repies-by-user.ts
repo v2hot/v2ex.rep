@@ -24,6 +24,7 @@ import {
 
 const isTouchScreen1 = isTouchScreen()
 let timeoutId: number | undefined
+let docBoundEvent = false
 
 const scrollPositionStack: number[] = []
 const showModalReplies = (
@@ -62,6 +63,9 @@ const showModalReplies = (
   const container = addElement(main, 'div', {
     class: 'related_replies_container',
   })
+  if (!container) {
+    return
+  }
 
   const box = addElement(container, 'div', {
     class: 'box related_replies related_replies_before',
@@ -70,6 +74,9 @@ const showModalReplies = (
   const box2 = addElement(container, 'div', {
     class: 'box related_replies related_replies_after',
   })
+  if (!box || !box2) {
+    return
+  }
 
   box.innerHTML = '' // `<div class="cell"><div class="fr"></div><span class="fade">关联回复</span></div>`
   box2.innerHTML = ''
@@ -77,6 +84,9 @@ const showModalReplies = (
   const tabs = addElement(box, 'div', {
     class: 'box tabs inner',
   })
+  if (!tabs) {
+    return
+  }
 
   addElement(tabs, 'a', {
     class: !type || type === 'all' ? 'tab_current' : 'tab',
@@ -272,14 +282,17 @@ const showRelatedReplies = (
   showModalReplies(replies, memberLink, memberId, type)
 }
 
-const onMouseOver = (event: Event) => {
+const scheduleShowRelatedReplies = (memberLink: Element) => {
   if (timeoutId) {
     clearTimeout(timeoutId)
     timeoutId = undefined
   }
 
-  const memberLink = event.target as HTMLAnchorElement
   timeoutId = setTimeout(() => {
+    if (!(memberLink instanceof HTMLAnchorElement)) {
+      return
+    }
+
     // console.log(memberLink)
     const memberId = (/member\/(\w+)/.exec(memberLink.href) || [])[1]
     if (memberId) {
@@ -289,11 +302,59 @@ const onMouseOver = (event: Event) => {
   }, 700) as unknown as number
 }
 
-const onMouseOut = () => {
+const cancelShowRelatedReplies = () => {
   if (timeoutId) {
     clearTimeout(timeoutId)
     timeoutId = undefined
   }
+}
+
+const onDocumentMouseOver = (event: Event) => {
+  const target = event.target as HTMLElement | undefined
+  if (!target) {
+    return
+  }
+
+  const memberLink = target.closest('a[href^="/member/"]')
+  if (!memberLink) {
+    return
+  }
+
+  scheduleShowRelatedReplies(memberLink)
+}
+
+const onDocumentMouseOut = (event: Event) => {
+  const mouseEvent = event as MouseEvent
+  const target = mouseEvent.target as HTMLElement | undefined
+  if (!target) {
+    return
+  }
+
+  const memberLink = target.closest('a[href^="/member/"]')
+  if (!memberLink) {
+    return
+  }
+
+  const relatedTarget = mouseEvent.relatedTarget as Node | undefined
+  if (relatedTarget && memberLink.contains(relatedTarget)) {
+    return
+  }
+
+  cancelShowRelatedReplies()
+}
+
+const onDocumentTouchStart = (event: Event) => {
+  const target = event.target as HTMLElement | undefined
+  if (!target) {
+    return
+  }
+
+  const memberLink = target.closest('a[href^="/member/"]')
+  if (!memberLink) {
+    return
+  }
+
+  scheduleShowRelatedReplies(memberLink)
 }
 
 const closeModal = (closeLast = false) => {
@@ -368,42 +429,29 @@ const onDocumentKeyDown = (event) => {
 
 export const filterRepliesByUser = (toogle: boolean) => {
   if (toogle) {
-    const memberLinks = $$('a[href^="/member/"]')
-    for (const memberLink of memberLinks) {
-      if (!memberLink.boundEvent) {
-        addEventListener(memberLink, 'mouseover', onMouseOver, true)
-        addEventListener(memberLink, 'mouseout', onMouseOut)
-        if (isTouchScreen1) {
-          addEventListener(memberLink, 'touchstart', onMouseOver, true)
-        }
-
-        memberLink.boundEvent = true
+    if (!docBoundEvent) {
+      addEventListener(doc, 'mouseover', onDocumentMouseOver, true)
+      addEventListener(doc, 'mouseout', onDocumentMouseOut, true)
+      if (isTouchScreen1) {
+        addEventListener(doc, 'touchstart', onDocumentTouchStart, true)
       }
-    }
 
-    if (!doc.boundEvent) {
       addEventListener(doc, 'click', onDocumentClick, true)
       addEventListener(doc, 'keydown', onDocumentKeyDown)
-      doc.boundEvent = true
+      docBoundEvent = true
     }
-  } else if (doc.boundEvent) {
+  } else if (docBoundEvent) {
     // if toogle === false
     closeModal()
+    removeEventListener(doc, 'mouseover', onDocumentMouseOver, true)
+    removeEventListener(doc, 'mouseout', onDocumentMouseOut, true)
+    if (isTouchScreen1) {
+      removeEventListener(doc, 'touchstart', onDocumentTouchStart, true)
+    }
+
     removeEventListener(doc, 'click', onDocumentClick, true)
     removeEventListener(doc, 'keydown', onDocumentKeyDown)
-    doc.boundEvent = false
-
-    const memberLinks = $$('a[href^="/member/"]')
-    for (const memberLink of memberLinks) {
-      if (memberLink.boundEvent) {
-        removeEventListener(memberLink, 'mouseover', onMouseOver, true)
-        removeEventListener(memberLink, 'mouseout', onMouseOut)
-        if (isTouchScreen1) {
-          removeEventListener(memberLink, 'touchstart', onMouseOver, true)
-        }
-
-        memberLink.boundEvent = false
-      }
-    }
+    docBoundEvent = false
+    cancelShowRelatedReplies()
   }
 }

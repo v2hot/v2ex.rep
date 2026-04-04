@@ -16,6 +16,10 @@ import {
 
 export const addlinkToCitedFloorNumbers = (replyElement: HTMLElement) => {
   const content = $('.reply_content', replyElement)
+  if (!content) {
+    return
+  }
+
   const memberLinks = $$('a[href^="/member/"]', content) as HTMLAnchorElement[]
   for (const memberLink of memberLinks) {
     const previousTextNode = memberLink.previousSibling
@@ -30,7 +34,7 @@ export const addlinkToCitedFloorNumbers = (replyElement: HTMLElement) => {
       let nextTextNode = memberLink.nextSibling
       while (nextTextNode) {
         if (
-          nextTextNode.tagName === 'BR' ||
+          nextTextNode.nodeName === 'BR' ||
           !nextTextNode.textContent ||
           nextTextNode.textContent.trim().length === 0
         ) {

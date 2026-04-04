@@ -18,8 +18,8 @@ let done = false
 const reset = () => {
   const element = $('#top_replies')
   if (element) {
-    const sep20 = element.previousElementSibling
-    if (hasClass(sep20, 'sep20')) {
+    const sep20 = element.previousElementSibling as HTMLElement | undefined
+    if (sep20 && hasClass(sep20, 'sep20')) {
       sep20.remove()
     }
 
@@ -34,7 +34,11 @@ export const showTopReplies = (
 ) => {
   if (!toggle) {
     reset()
-    removeClass($('#Wrapper'), 'sticky_rightbar')
+    const wrapper = $('#Wrapper')
+    if (wrapper) {
+      removeClass(wrapper, 'sticky_rightbar')
+    }
+
     done = false
     return
   }
@@ -47,7 +51,10 @@ export const showTopReplies = (
 
   reset()
 
-  addClass($('#Wrapper'), 'sticky_rightbar')
+  const wrapper = $('#Wrapper')
+  if (wrapper) {
+    addClass(wrapper, 'sticky_rightbar')
+  }
 
   const topReplies = replyElements
     .filter((reply) => {
@@ -67,18 +74,20 @@ export const showTopReplies = (
           0
         )
         if (thanked > 0) {
-          reply.thanked = thanked
+          reply.dataset.vrThanked = String(thanked)
           return true
         }
       }
 
       return false
     })
-    .sort((a, b) =>
-      b.thanked === a.thanked
+    .sort((a, b) => {
+      const aThanked = parseInt10(a.dataset.vrThanked, 0)
+      const bThanked = parseInt10(b.dataset.vrThanked, 0)
+      return bThanked === aThanked
         ? sortReplyElementsByFloorNumberCompareFn(a, b)
-        : b.thanked - a.thanked
-    )
+        : bThanked - aThanked
+    })
   // .slice(0, 10)
 
   if (topReplies.length > 0) {
