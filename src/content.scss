@@ -78,8 +78,16 @@ body .v2p-controls a[onclick^="replyOne"] {
 }
 
 .related_replies_container {
+  .box {
+    border-radius: 0 !important;
+  }
+
   .related_replies {
     position: absolute;
+    /* fix v2ex polish issue */
+    overflow: visible !important;
+    /* fix v2ex polish issue */
+    padding: 0px !important;
     z-index: 10000;
     width: 100%;
     -webkit-box-shadow: 0px 10px 39px 10px rgba(62, 66, 66, 0.22);
@@ -119,6 +127,8 @@ body .v2p-controls a[onclick^="replyOne"] {
     display: flex;
     justify-content: center;
     z-index: 10001;
+    /* fix v2ex polish issue */
+    padding: 10px !important;
 
     a {
       cursor: pointer;

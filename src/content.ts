@@ -5,6 +5,7 @@ import {
 } from 'browser-extension-settings'
 import {
   $,
+  $$,
   addEventListener,
   addStyle,
   doc,
@@ -215,6 +216,22 @@ const settingsTable = {
 }
 
 let fixedReplyFloorNumbers = false
+let hasV2POrV2Next = false
+
+const cleanupCitedElements = () => {
+  for (const element of $$('.cited_reply')) {
+    element.remove()
+  }
+
+  for (const element of $$('#Main .cited_floor_number')) {
+    const floorNumber = element.textContent?.trim()
+    if (floorNumber) {
+      element.before(doc.createTextNode(floorNumber))
+    }
+
+    element.remove()
+  }
+}
 
 async function applyAll() {
   const domReady =
@@ -279,9 +296,12 @@ async function applyAll() {
         quickHideReply(replyElement)
       }
 
-      addlinkToCitedFloorNumbers(replyElement)
+      if (!hasV2POrV2Next) {
+        addlinkToCitedFloorNumbers(replyElement)
+      }
 
-      if (getSettingsValue('showCitedReplies')) {
+      // Don't show cited replies if v2ex plish or v2ex-next extension is enabled
+      if (getSettingsValue('showCitedReplies') && !hasV2POrV2Next) {
         showCitedReplies(
           replyElement,
           getSettingsValue('showPreviousCitedReplies')
@@ -367,7 +387,7 @@ async function main() {
             replyWithFloorNumber(replyElement, true)
           }
 
-          if (getSettingsValue('showCitedReplies')) {
+          if (getSettingsValue('showCitedReplies') && !hasV2POrV2Next) {
             showCitedReplies(
               replyElement,
               getSettingsValue('showPreviousCitedReplies'),
@@ -381,7 +401,7 @@ async function main() {
       await resetCachedReplyElementsThenApplyAll()
       const replyElements = getCachedReplyElements()
       for (const replyElement of replyElements) {
-        if (getSettingsValue('showCitedReplies')) {
+        if (getSettingsValue('showCitedReplies') && !hasV2POrV2Next) {
           showCitedReplies(
             replyElement,
             getSettingsValue('showPreviousCitedReplies'),
@@ -416,7 +436,7 @@ async function main() {
   })
 
   const observer = new MutationObserver((mutationsList) => {
-    // console.error("mutation", Date.now(), mutationsList)
+    // console.error('mutation', Date.now(), mutationsList)
     scanNodes()
   })
 
@@ -424,6 +444,50 @@ async function main() {
     childList: true,
     subtree: true,
   })
+
+  const docElementObserver = new MutationObserver((mutationsList) => {
+    // console.error('mutation', Date.now(), mutationsList)
+    for (const m of mutationsList) {
+      if (
+        !hasV2POrV2Next &&
+        m.type === 'childList' &&
+        m.addedNodes.length > 0
+      ) {
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        for (let i = 0; i < m.addedNodes.length; i++) {
+          const n = m.addedNodes[i]
+          // v2ex polish or v2ex-next extension
+          if (
+            n instanceof HTMLElement &&
+            ((n.tagName === 'SECTION' && n.id === 'app') ||
+              (n.tagName === 'STYLE' &&
+                (n.textContent?.includes('v2p-theme') ||
+                  n.textContent?.includes('v2next'))))
+          ) {
+            hasV2POrV2Next = true
+            cleanupCitedElements()
+
+            break
+          }
+        }
+      }
+    }
+  })
+
+  docElementObserver.observe(doc.documentElement, {
+    childList: true,
+    subtree: true,
+  })
+
+  for (const style of $$('style')) {
+    const styleText = style.textContent || ''
+    if (styleText.includes('v2p-theme') || styleText.includes('v2next')) {
+      hasV2POrV2Next = true
+      cleanupCitedElements()
+
+      break
+    }
+  }
 }
 
 runWhenBodyExists(async () => {

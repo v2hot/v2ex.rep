@@ -5,6 +5,7 @@ import {
   createElement,
   doc,
   hasClass,
+  isVisible,
   parseInt10,
 } from 'browser-extension-utils'
 
@@ -95,7 +96,21 @@ export const cloneReplyElement = (
       textContent: floorNumber.textContent,
     })
     addEventListener(floorNumber2, 'click', (event) => {
-      replyElement.scrollIntoView({ block: 'start' })
+      let targetElement = replyElement
+      // Fix v2ex-next issue
+      if (!replyElement.isConnected || !isVisible(replyElement)) {
+        const floorNumber = getFloorNumber(replyElement)
+        const newTargetElement = $(
+          `.comments .comment[data-floor="${floorNumber}"]`
+        )
+        if (newTargetElement) {
+          targetElement = newTargetElement
+        } else {
+          return
+        }
+      }
+
+      targetElement.scrollIntoView({ block: 'start' })
       event.preventDefault()
       event.stopPropagation()
     })

@@ -4,7 +4,7 @@
 // @namespace            https://github.com/v2hot/v2ex.rep
 // @homepageURL          https://github.com/v2hot/v2ex.rep#readme
 // @supportURL           https://github.com/v2hot/v2ex.rep/issues
-// @version              1.7.5
+// @version              1.8.0
 // @description          专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @description:zh-CN    专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @icon                 https://www.v2ex.com/favicon.ico
@@ -1557,7 +1557,7 @@
     handleShowSettingsUrl()
   }
   var content_default =
-    'a.icon_button{opacity:1 !important;visibility:visible;margin-right:14px}a.icon_button:last-child{margin-right:0}a.icon_button svg{vertical-align:text-top}body .v2p-controls{opacity:1}body .v2p-controls>a.icon_button{margin-right:0}body .v2p-controls div a{margin-right:15px}body .v2p-controls div a:last-child{margin-right:0}body .v2p-controls a[onclick^=replyOne]{opacity:1 !important}.sticky_rightbar #Rightbar{position:sticky;top:0;max-height:100vh;overflow-y:auto;overflow-x:hidden;--sb-track-color: #00000000;--sb-thumb-color: #33334480;--sb-size: 2px;scrollbar-color:rgba(0,0,0,0) rgba(0,0,0,0);scrollbar-width:thin}.sticky_rightbar #Rightbar:hover{scrollbar-color:var(--sb-thumb-color) var(--sb-track-color)}.sticky_rightbar #Rightbar::-webkit-scrollbar{width:var(--sb-size)}.sticky_rightbar #Rightbar::-webkit-scrollbar-track{background:rgba(0,0,0,0);border-radius:10px}.sticky_rightbar #Rightbar:hover::-webkit-scrollbar-track{background:var(--sb-track-color)}.sticky_rightbar #Rightbar::-webkit-scrollbar-thumb{background:rgba(0,0,0,0);border-radius:10px}.sticky_rightbar #Rightbar:hover::-webkit-scrollbar-thumb{background:var(--sb-thumb-color)}.sticky_rightbar #Rightbar .v2p-tool-box{position:unset}.related_replies_container .related_replies{position:absolute;z-index:10000;width:100%;-webkit-box-shadow:0px 10px 39px 10px rgba(62,66,66,.22);-moz-box-shadow:0px 10px 39px 10px rgba(62,66,66,.22);box-shadow:0px 10px 39px 10px rgba(62,66,66,.22) !important}.related_replies_container .related_replies_before::before{content:"";display:block;width:100%;height:10000px;position:absolute;margin-top:-10000px;background-color:#334;opacity:50%}.related_replies_container .related_replies_after::after{content:"";display:block;width:100%;height:10000px;position:absolute;background-color:#334;opacity:50%}.related_replies_container.no_replies .related_replies_before::before,.related_replies_container.no_replies .related_replies_after::after{display:none}.related_replies_container .tabs{position:sticky;top:0;display:flex;justify-content:center;z-index:10001}.related_replies_container .tabs a{cursor:pointer}a.no{background-color:rgba(0,0,0,0) !important;color:#1484cd !important;border:1px solid #1484cd;border-radius:3px !important;opacity:1 !important}.cited_floor_number{color:#1484cd !important;cursor:pointer}.reply_content .cell.cited_reply{scale:.85;background-color:#f5f5f5;border:1px solid var(--box-border-color);white-space:initial}.reply_content .cell.cited_reply::after{content:"";display:block;position:absolute;left:0;bottom:0;width:100%;height:100%;opacity:.45;background-color:var(--box-background-color)}.reply_content .cell.cited_reply:hover::after{display:none}.reply_content .cell.cited_reply .vr_wrapper{max-height:150px;overflow:auto;--sb-track-color: #00000000;--sb-thumb-color: #33334480;--sb-size: 2px;scrollbar-color:var(--sb-thumb-color) var(--sb-track-color);scrollbar-width:thin}.reply_content .cell.cited_reply .vr_wrapper::-webkit-scrollbar{width:var(--sb-size)}.reply_content .cell.cited_reply .vr_wrapper::-webkit-scrollbar-track{background:var(--sb-track-color);border-radius:10px}.reply_content .cell.cited_reply .vr_wrapper::-webkit-scrollbar-thumb{background:var(--sb-thumb-color);border-radius:10px}[data-vr-opaticy-of-cited-replies="0"] .reply_content .cell.cited_reply::after{display:none}[data-vr-opaticy-of-cited-replies="1"] .reply_content .cell.cited_reply::after{opacity:.2}[data-vr-opaticy-of-cited-replies="3"] .reply_content .cell.cited_reply::after{opacity:.6}.v2p-indent .cell.cited_reply,.v2p-indent .reply_content+.reply_content,.v2p-indent .reply_content+.reply_content+.v2p-expand-btn,.v2p-indent .v2p-collapsed:has(.reply_content+.reply_content)::before,.comment .comment .cell.cited_reply{display:none !important}#top_replies .cell .vr_wrapper{position:relative;max-height:150px;overflow:hidden}#top_replies .cell .vr_wrapper::after{content:"";display:block;position:absolute;bottom:0;width:100%;height:5px;opacity:.8;background-color:var(--box-background-color)}.sticky_paging{position:sticky;bottom:0;background-color:var(--box-background-color) !important;border-top:1px solid var(--box-border-color);z-index:90}.reply-box-sticky{z-index:91}.Night .reply_content .cell.cited_reply{background-color:#1d1f21}.vr_upload_image{cursor:pointer}.vr_upload_image.vr_button_disabled,.vr_upload_image.vr_button_disabled:hover{cursor:default;text-decoration:none;color:var(--color-fade)}.sticky_topic_buttons .topic_buttons,.sticky_topic_buttons .topic_buttons_mobile{position:sticky;bottom:0;background-color:var(--box-background-color) !important;border-top:1px solid var(--box-border-color)}.sticky_topic_buttons .header+.cell{border-bottom:none}'
+    'a.icon_button{opacity:1 !important;visibility:visible;margin-right:14px}a.icon_button:last-child{margin-right:0}a.icon_button svg{vertical-align:text-top}body .v2p-controls{opacity:1}body .v2p-controls>a.icon_button{margin-right:0}body .v2p-controls div a{margin-right:15px}body .v2p-controls div a:last-child{margin-right:0}body .v2p-controls a[onclick^=replyOne]{opacity:1 !important}.sticky_rightbar #Rightbar{position:sticky;top:0;max-height:100vh;overflow-y:auto;overflow-x:hidden;--sb-track-color: #00000000;--sb-thumb-color: #33334480;--sb-size: 2px;scrollbar-color:rgba(0,0,0,0) rgba(0,0,0,0);scrollbar-width:thin}.sticky_rightbar #Rightbar:hover{scrollbar-color:var(--sb-thumb-color) var(--sb-track-color)}.sticky_rightbar #Rightbar::-webkit-scrollbar{width:var(--sb-size)}.sticky_rightbar #Rightbar::-webkit-scrollbar-track{background:rgba(0,0,0,0);border-radius:10px}.sticky_rightbar #Rightbar:hover::-webkit-scrollbar-track{background:var(--sb-track-color)}.sticky_rightbar #Rightbar::-webkit-scrollbar-thumb{background:rgba(0,0,0,0);border-radius:10px}.sticky_rightbar #Rightbar:hover::-webkit-scrollbar-thumb{background:var(--sb-thumb-color)}.sticky_rightbar #Rightbar .v2p-tool-box{position:unset}.related_replies_container .box{border-radius:0 !important}.related_replies_container .related_replies{position:absolute;overflow:visible !important;padding:0px !important;z-index:10000;width:100%;-webkit-box-shadow:0px 10px 39px 10px rgba(62,66,66,.22);-moz-box-shadow:0px 10px 39px 10px rgba(62,66,66,.22);box-shadow:0px 10px 39px 10px rgba(62,66,66,.22) !important}.related_replies_container .related_replies_before::before{content:"";display:block;width:100%;height:10000px;position:absolute;margin-top:-10000px;background-color:#334;opacity:50%}.related_replies_container .related_replies_after::after{content:"";display:block;width:100%;height:10000px;position:absolute;background-color:#334;opacity:50%}.related_replies_container.no_replies .related_replies_before::before,.related_replies_container.no_replies .related_replies_after::after{display:none}.related_replies_container .tabs{position:sticky;top:0;display:flex;justify-content:center;z-index:10001;padding:10px !important}.related_replies_container .tabs a{cursor:pointer}a.no{background-color:rgba(0,0,0,0) !important;color:#1484cd !important;border:1px solid #1484cd;border-radius:3px !important;opacity:1 !important}.cited_floor_number{color:#1484cd !important;cursor:pointer}.reply_content .cell.cited_reply{scale:.85;background-color:#f5f5f5;border:1px solid var(--box-border-color);white-space:initial}.reply_content .cell.cited_reply::after{content:"";display:block;position:absolute;left:0;bottom:0;width:100%;height:100%;opacity:.45;background-color:var(--box-background-color)}.reply_content .cell.cited_reply:hover::after{display:none}.reply_content .cell.cited_reply .vr_wrapper{max-height:150px;overflow:auto;--sb-track-color: #00000000;--sb-thumb-color: #33334480;--sb-size: 2px;scrollbar-color:var(--sb-thumb-color) var(--sb-track-color);scrollbar-width:thin}.reply_content .cell.cited_reply .vr_wrapper::-webkit-scrollbar{width:var(--sb-size)}.reply_content .cell.cited_reply .vr_wrapper::-webkit-scrollbar-track{background:var(--sb-track-color);border-radius:10px}.reply_content .cell.cited_reply .vr_wrapper::-webkit-scrollbar-thumb{background:var(--sb-thumb-color);border-radius:10px}[data-vr-opaticy-of-cited-replies="0"] .reply_content .cell.cited_reply::after{display:none}[data-vr-opaticy-of-cited-replies="1"] .reply_content .cell.cited_reply::after{opacity:.2}[data-vr-opaticy-of-cited-replies="3"] .reply_content .cell.cited_reply::after{opacity:.6}.v2p-indent .cell.cited_reply,.v2p-indent .reply_content+.reply_content,.v2p-indent .reply_content+.reply_content+.v2p-expand-btn,.v2p-indent .v2p-collapsed:has(.reply_content+.reply_content)::before,.comment .comment .cell.cited_reply{display:none !important}#top_replies .cell .vr_wrapper{position:relative;max-height:150px;overflow:hidden}#top_replies .cell .vr_wrapper::after{content:"";display:block;position:absolute;bottom:0;width:100%;height:5px;opacity:.8;background-color:var(--box-background-color)}.sticky_paging{position:sticky;bottom:0;background-color:var(--box-background-color) !important;border-top:1px solid var(--box-border-color);z-index:90}.reply-box-sticky{z-index:91}.Night .reply_content .cell.cited_reply{background-color:#1d1f21}.vr_upload_image{cursor:pointer}.vr_upload_image.vr_button_disabled,.vr_upload_image.vr_button_disabled:hover{cursor:default;text-decoration:none;color:var(--color-fade)}.sticky_topic_buttons .topic_buttons,.sticky_topic_buttons .topic_buttons_mobile{position:sticky;bottom:0;background-color:var(--box-background-color) !important;border-top:1px solid var(--box-border-color)}.sticky_topic_buttons .header+.cell{border-bottom:none}'
   var addLinkToAvatars = (replyElement) => {
     var _a, _b
     const memberLink = $('a[href^="/member/"]', replyElement)
@@ -1650,7 +1650,19 @@
         textContent: floorNumber.textContent,
       })
       addEventListener(floorNumber2, "click", (event) => {
-        replyElement.scrollIntoView({ block: "start" })
+        let targetElement = replyElement
+        if (!replyElement.isConnected || !isVisible(replyElement)) {
+          const floorNumber3 = getFloorNumber(replyElement)
+          const newTargetElement = $(
+            '.comments .comment[data-floor="'.concat(floorNumber3, '"]')
+          )
+          if (newTargetElement) {
+            targetElement = newTargetElement
+          } else {
+            return
+          }
+        }
+        targetElement.scrollIntoView({ block: "start" })
         event.preventDefault()
         event.stopPropagation()
       })
@@ -3387,10 +3399,7 @@
     showPreviousCitedReplies,
     forceUpdate = false
   ) => {
-    if (
-      !forceUpdate &&
-      (replyElement.dataset.showCitedReplies || $(".v2p-color-mode-toggle"))
-    ) {
+    if (!forceUpdate && replyElement.dataset.showCitedReplies === "done") {
       return
     }
     const floorNumber = getFloorNumber(replyElement)
@@ -3943,6 +3952,21 @@
     },
   }
   var fixedReplyFloorNumbers = false
+  var hasV2POrV2Next = false
+  var cleanupCitedElements = () => {
+    var _a
+    for (const element of $$(".cited_reply")) {
+      element.remove()
+    }
+    for (const element of $$("#Main .cited_floor_number")) {
+      const floorNumber =
+        (_a = element.textContent) == null ? void 0 : _a.trim()
+      if (floorNumber) {
+        element.before(doc.createTextNode(floorNumber))
+      }
+      element.remove()
+    }
+  }
   async function applyAll() {
     const domReady =
       doc.readyState === "interactive" || doc.readyState === "complete"
@@ -3984,8 +4008,10 @@
         if (getSettingsValue("quickHideReply")) {
           quickHideReply(replyElement)
         }
-        addlinkToCitedFloorNumbers(replyElement)
-        if (getSettingsValue("showCitedReplies")) {
+        if (!hasV2POrV2Next) {
+          addlinkToCitedFloorNumbers(replyElement)
+        }
+        if (getSettingsValue("showCitedReplies") && !hasV2POrV2Next) {
           showCitedReplies(
             replyElement,
             getSettingsValue("showPreviousCitedReplies")
@@ -4047,7 +4073,7 @@
             if (getSettingsValue("replyWithFloorNumber")) {
               replyWithFloorNumber(replyElement, true)
             }
-            if (getSettingsValue("showCitedReplies")) {
+            if (getSettingsValue("showCitedReplies") && !hasV2POrV2Next) {
               showCitedReplies(
                 replyElement,
                 getSettingsValue("showPreviousCitedReplies"),
@@ -4061,7 +4087,7 @@
         await resetCachedReplyElementsThenApplyAll()
         const replyElements = getCachedReplyElements()
         for (const replyElement of replyElements) {
-          if (getSettingsValue("showCitedReplies")) {
+          if (getSettingsValue("showCitedReplies") && !hasV2POrV2Next) {
             showCitedReplies(
               replyElement,
               getSettingsValue("showPreviousCitedReplies"),
@@ -4096,6 +4122,47 @@
       childList: true,
       subtree: true,
     })
+    const docElementObserver = new MutationObserver((mutationsList) => {
+      var _a, _b
+      for (const m of mutationsList) {
+        if (
+          !hasV2POrV2Next &&
+          m.type === "childList" &&
+          m.addedNodes.length > 0
+        ) {
+          for (let i2 = 0; i2 < m.addedNodes.length; i2++) {
+            const n = m.addedNodes[i2]
+            if (
+              n instanceof HTMLElement &&
+              ((n.tagName === "SECTION" && n.id === "app") ||
+                (n.tagName === "STYLE" &&
+                  (((_a = n.textContent) == null
+                    ? void 0
+                    : _a.includes("v2p-theme")) ||
+                    ((_b = n.textContent) == null
+                      ? void 0
+                      : _b.includes("v2next")))))
+            ) {
+              hasV2POrV2Next = true
+              cleanupCitedElements()
+              break
+            }
+          }
+        }
+      }
+    })
+    docElementObserver.observe(doc.documentElement, {
+      childList: true,
+      subtree: true,
+    })
+    for (const style of $$("style")) {
+      const styleText = style.textContent || ""
+      if (styleText.includes("v2p-theme") || styleText.includes("v2next")) {
+        hasV2POrV2Next = true
+        cleanupCitedElements()
+        break
+      }
+    }
   }
   runWhenBodyExists(async () => {
     if (doc.documentElement.dataset.v2exRep === void 0) {

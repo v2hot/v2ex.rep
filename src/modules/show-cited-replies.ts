@@ -12,11 +12,7 @@ export const showCitedReplies = (
   showPreviousCitedReplies: string,
   forceUpdate = false
 ) => {
-  // Don't show cited replies if v2ex plish extension is enabled
-  if (
-    !forceUpdate &&
-    (replyElement.dataset.showCitedReplies || $('.v2p-color-mode-toggle'))
-  ) {
+  if (!forceUpdate && replyElement.dataset.showCitedReplies === 'done') {
     return
   }
 
