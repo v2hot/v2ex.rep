@@ -5,7 +5,6 @@
 
 import {
   $,
-  addElement,
   addEventListener,
   createElement,
   doc,
@@ -116,7 +115,14 @@ const handleUploadImage = (file: File) => {
 const handleClickUploadImage = () => {
   const imgInput = document.createElement('input')
 
-  imgInput.style.display = 'none'
+  // 不能用 display: none，部分浏览器对 display: none 的 file input 调用 click() 不会弹出文件选择窗口。
+  // 参考 Dropzone 的隐藏方式
+  imgInput.style.visibility = 'hidden'
+  imgInput.style.position = 'absolute'
+  imgInput.style.top = '0'
+  imgInput.style.left = '0'
+  imgInput.style.width = '0'
+  imgInput.style.height = '0'
   imgInput.type = 'file'
   imgInput.accept = 'image/*'
   imgInput.multiple = true
@@ -129,8 +135,12 @@ const handleClickUploadImage = () => {
         handleUploadImage(file)
       }
     }
+
+    imgInput.remove()
   })
 
+  // 必须先插入到文档中再触发 click()，否则部分浏览器（Firefox/Safari 等）不会弹出文件选择窗口
+  doc.body.append(imgInput)
   imgInput.click()
 }
 
@@ -145,23 +155,24 @@ const init = () => {
     return
   }
 
+  // 已存在上传图片按钮，无需重复添加。 uiu-insert-btn 是“通用图片上传助手”插件的按钮
+  if ($('.vr_upload_image') || $('.uiu-insert-btn')) {
+    return
+  }
+
   setAttribute(
     replyTextArea,
     'placeholder',
     '您可以在回复框内直接粘贴图片或拖拽图片文件至回复框内上传'
   )
 
-  const uploadTip = '+ 插入图片'
+  const uploadTip = ' + 插入图片'
   const placeholder = '[上传图片中...]'
-
-  addElement(appendPosition, 'span', {
-    class: 'snow',
-    textContent: ' · ',
-  })
 
   const uploadButton = createElement('a', {
     class: 'vr_upload_image',
     textContent: uploadTip,
+    style: 'padding-left: 10px;',
   })
   appendPosition.append(uploadButton)
 

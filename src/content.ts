@@ -9,6 +9,7 @@ import {
   addEventListener,
   addStyle,
   doc,
+  hasClass,
   runOnce,
   runWhenBodyExists,
   throttle,
@@ -456,6 +457,17 @@ async function main() {
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < m.addedNodes.length; i++) {
           const n = m.addedNodes[i]
+          if (
+            n instanceof HTMLElement &&
+            n.tagName === 'A' &&
+            hasClass(n, 'uiu-insert-btn')
+          ) {
+            const imageUploadButton = $('.vr_upload_image')
+            if (imageUploadButton) {
+              imageUploadButton.remove()
+            }
+          }
+
           // v2ex polish or v2ex-next extension
           if (
             n instanceof HTMLElement &&
