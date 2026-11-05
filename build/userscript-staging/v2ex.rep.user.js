@@ -4,7 +4,7 @@
 // @namespace            https://github.com/v2hot/v2ex.rep
 // @homepageURL          https://github.com/v2hot/v2ex.rep#readme
 // @supportURL           https://github.com/v2hot/v2ex.rep/issues
-// @version              1.8.1
+// @version              1.8.2
 // @description          专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @description:zh-CN    专注提升 V2EX 主题回复浏览体验的浏览器扩展/用户脚本。主要功能有 ✅ 修复有被 block 的用户时错位的楼层号；✅ 回复时自动带上楼层号；✅ 显示热门回复；✅ 显示被引用的回复；✅ 查看用户在当前主题下的所有回复与被提及的回复；✅ 自动预加载所有分页，支持解析显示跨页面引用；✅ 回复时上传图片；✅ 无感自动签到；✅ 懒加载用户头像图片；✅ 一直显示感谢按钮 🙏；✅ 一直显示隐藏回复按钮 🙈；✅ 快速发送感谢/快速隐藏回复（no confirm）等。
 // @icon                 https://www.v2ex.com/favicon.ico
@@ -3645,7 +3645,12 @@
   }
   var handleClickUploadImage = () => {
     const imgInput = document.createElement("input")
-    imgInput.style.display = "none"
+    imgInput.style.visibility = "hidden"
+    imgInput.style.position = "absolute"
+    imgInput.style.top = "0"
+    imgInput.style.left = "0"
+    imgInput.style.width = "0"
+    imgInput.style.height = "0"
     imgInput.type = "file"
     imgInput.accept = "image/*"
     imgInput.multiple = true
@@ -3656,7 +3661,9 @@
           handleUploadImage(file)
         }
       }
+      imgInput.remove()
     })
+    doc.body.append(imgInput)
     imgInput.click()
   }
   var init = () => {
@@ -3668,20 +3675,20 @@
     if (!appendPosition) {
       return
     }
+    if ($(".vr_upload_image") || $(".uiu-insert-btn")) {
+      return
+    }
     setAttribute(
       replyTextArea,
       "placeholder",
       "\u60A8\u53EF\u4EE5\u5728\u56DE\u590D\u6846\u5185\u76F4\u63A5\u7C98\u8D34\u56FE\u7247\u6216\u62D6\u62FD\u56FE\u7247\u6587\u4EF6\u81F3\u56DE\u590D\u6846\u5185\u4E0A\u4F20"
     )
-    const uploadTip = "+ \u63D2\u5165\u56FE\u7247"
+    const uploadTip = " + \u63D2\u5165\u56FE\u7247"
     const placeholder = "[\u4E0A\u4F20\u56FE\u7247\u4E2D...]"
-    addElement2(appendPosition, "span", {
-      class: "snow",
-      textContent: " \xB7 ",
-    })
     const uploadButton = createElement("a", {
       class: "vr_upload_image",
       textContent: uploadTip,
+      style: "padding-left: 10px;",
     })
     appendPosition.append(uploadButton)
     addEventListener(uploadButton, "click", () => {
@@ -4147,6 +4154,16 @@
         ) {
           for (let i2 = 0; i2 < m.addedNodes.length; i2++) {
             const n = m.addedNodes[i2]
+            if (
+              n instanceof HTMLElement &&
+              n.tagName === "A" &&
+              hasClass(n, "uiu-insert-btn")
+            ) {
+              const imageUploadButton = $(".vr_upload_image")
+              if (imageUploadButton) {
+                imageUploadButton.remove()
+              }
+            }
             if (
               n instanceof HTMLElement &&
               ((n.tagName === "SECTION" && n.id === "app") ||
