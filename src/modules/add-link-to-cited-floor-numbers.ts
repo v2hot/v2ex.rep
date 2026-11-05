@@ -80,7 +80,7 @@ export const addlinkToCitedFloorNumbers = (replyElement: HTMLElement) => {
   runOnce('addlinkToCitedFloorNumbers:document-onclick', () => {
     addEventListener(doc, 'click', (event) => {
       const target = event.target as HTMLElement
-      if (hasClass(target, 'cited_floor_number')) {
+      if (hasClass(target, 'cited_floor_number') || hasClass(target, 'no')) {
         const memberId = target.dataset.memberId
         const floorNumber = parseInt10(target.dataset.floorNumber)
         const citedReplyElement = getReplyElementByMemberIdAndFloorNumber(

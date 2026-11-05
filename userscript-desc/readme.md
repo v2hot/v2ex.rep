@@ -130,6 +130,8 @@ Compatible with the following userscript managers
 
 ## Release Notes
 
+- v1.8.1
+  - 修复 v2ex 回复 HTML 改版问题
 - v1.8.0
   - 修复 v2ex-next, v2ex polish 兼容性问题
 - 1.7.5

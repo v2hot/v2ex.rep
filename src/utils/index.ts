@@ -89,11 +89,15 @@ export const cloneReplyElement = (
   const cloned = replyElement.cloneNode(true) as HTMLElement
 
   const floorNumber = $('.no', cloned)
-  const toolbox = $('.fr', cloned)
-  if (toolbox && floorNumber) {
+  // 2026.11.4 - v2ex 改版后，没有 .fr 元素了。 https://github.com/v2hot/v2ex.rep/issues/6
+  const toolbox = $('.fr', cloned) || floorNumber?.parentElement
+  const memberId = getReplyAuthorMemberId(replyElement)
+  if (toolbox && floorNumber && memberId) {
     const floorNumber2 = createElement('a', {
       class: 'no',
       textContent: floorNumber.textContent,
+      'data-floor-number': floorNumber.textContent,
+      'data-member-id': memberId,
     })
     addEventListener(floorNumber2, 'click', (event) => {
       let targetElement = replyElement

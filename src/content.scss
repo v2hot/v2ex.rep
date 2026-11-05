@@ -234,6 +234,31 @@ a.no {
   }
 }
 
+#top_replies td > .flex-one-row {
+  column-gap: 4px;
+  > .flex-one-row:first-child {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    min-width: 0;
+    row-gap: 2px;
+  }
+  > .flex-one-row:last-child {
+    align-self: baseline;
+    margin-left: auto;
+    a.no {
+      word-break: keep-all;
+    }
+  }
+  strong {
+    flex: 1 1 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .ago {
+    line-height: 110%;
+  }
+}
+
 .sticky_paging {
   position: sticky;
   bottom: 0;

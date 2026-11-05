@@ -102,9 +102,21 @@ export const showTopReplies = (
       const cloned = cloneReplyElement(element, true)
       cloned.id = 'top_' + element.id
 
-      const ago = $('.ago', cloned)
-      if (ago) {
-        ago.before(createElement('br'))
+      const info = $('td > .flex-one-row .flex-one-row:first-child', cloned)
+      if (info) {
+        const innerWrapper = createElement('div', {
+          class: 'flex-one-row gap10',
+          style: 'width: 100%;',
+        })
+        for (const child of Array.from(info.children)) {
+          if (child.tagName === 'STRONG') {
+            continue
+          }
+
+          innerWrapper.append(child)
+        }
+
+        info.append(innerWrapper)
       }
 
       box.append(cloned)
